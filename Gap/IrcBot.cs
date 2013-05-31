@@ -194,7 +194,7 @@
         {
             get
             {
-                return ConfigurationManager.AppSettings["BotName"];
+                return ConfigurationManager.AppSettings["IrcBotName"];
             }
         }
         public static string Server
