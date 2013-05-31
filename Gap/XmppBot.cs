@@ -1,6 +1,7 @@
 ﻿namespace Gap
 {
     using System;
+    using System.Configuration;
     using System.Reflection;
     using System.Threading;
 
@@ -27,7 +28,7 @@
         public void Start()
         {
             this.Rebuild();
-            Con.Open("Octgn-Gap","password","bot");
+            Con.Open(XmppConfig.Username,XmppConfig.Password,XmppConfig.Resource);
         }
 
         internal void Rebuild()
@@ -39,7 +40,7 @@
 
             if (this.Con == null)
             {
-                this.Con = new XmppClientConnection("of.octgn.net");
+                this.Con = new XmppClientConnection(XmppConfig.Server);
                 this.Con.OnXmppConnectionStateChanged += this.XmppOnOnXmppConnectionStateChanged;
                 this.Con.OnLogin += this.XmppOnOnLogin;
                 this.Con.OnRosterItem += this.XmppOnOnRosterItem;
@@ -95,7 +96,7 @@
         private void XmppOnOnMessage(object sender, Message msg)
         {
             Log.Info(MethodBase.GetCurrentMethod().Name);
-            if (msg.From.User.Equals("lobby", StringComparison.InvariantCultureIgnoreCase))
+            if (msg.From.User.Equals(XmppConfig.MucRoom, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (string.IsNullOrWhiteSpace(msg.Body) || String.IsNullOrWhiteSpace(msg.From.Resource)) return;
                 MessageQueue.Get().Add(new MessageItem(msg.From.Resource,msg.Body,Destination.Irc));
@@ -109,7 +110,7 @@
 
         private void XmppOnOnRosterEnd(object sender)
         {
-            Muc.JoinRoom(new Jid("lobby@conference.of.octgn.net"),"Octgn-Gap");
+            Muc.JoinRoom(new Jid(XmppConfig.MucFullRoom),XmppConfig.Username);
         }
 
         private void XmppOnOnRosterItem(object sender, RosterItem item)
@@ -125,6 +126,46 @@
         private void XmppOnOnXmppConnectionStateChanged(object sender, XmppConnectionState state)
         {
             Log.Info(MethodBase.GetCurrentMethod().Name);
+        }
+    }
+    public static class XmppConfig
+    {
+        public static string Username
+        {
+            get
+        {
+            return ConfigurationManager.AppSettings["XmppUsername"];
+        }}
+        public static string Password
+        {
+            get
+        {
+            return ConfigurationManager.AppSettings["XmppPassword"];
+        } }
+        public static string Resource
+        {
+            get
+        {
+            return ConfigurationManager.AppSettings["XmppResource"];
+        } }
+        public static string Server
+        {
+            get
+        {
+            return ConfigurationManager.AppSettings["XmppServer"];
+        }}
+        public static string MucFullRoom
+        {
+            get
+        {
+            return ConfigurationManager.AppSettings["MucFullRoom"];
+        } }
+        public static string MucRoom
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["MucRoom"];
+            }
         }
     }
 }

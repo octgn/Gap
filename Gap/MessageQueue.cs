@@ -50,15 +50,16 @@
         {
             var item = this.Next();
             if (item == null) return;
-            if (item.From.Equals("octgn-gap", StringComparison.InvariantCultureIgnoreCase)) return;
+            if (item.From.Equals(IrcConfig.BotName, StringComparison.InvariantCultureIgnoreCase)) return;
+            if (item.From.Equals(XmppConfig.Username, StringComparison.InvariantCultureIgnoreCase)) return;
             switch (item.Dest)
             {
                 case Destination.Irc:
                     //Program.IrcBot.IrcClient.ChangeName("O8G-" + item.From);
-                    Program.IrcBot.IrcClient.Message("#octgn",item.From + ": " + item.Message);
+                    Program.IrcBot.IrcClient.Message(IrcConfig.Channel,item.From + ": " + item.Message);
                     break;
                 case Destination.Xmpp:
-                    var to = new Jid("lobby@conference.of.octgn.net");
+                    var to = new Jid(XmppConfig.MucFullRoom);
                     var j = new Jid(to.Bare);
                     var m = new Message(j, MessageType.groupchat, item.From + ": " + item.Message);
                     m.GenerateId();

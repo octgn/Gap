@@ -1,8 +1,10 @@
 ﻿namespace Gap
 {
     using System;
+    using System.Configuration;
     using System.Reflection;
     using System.Threading;
+    using System.Threading.Tasks;
 
     using NetIrc2;
     using NetIrc2.Events;
@@ -41,17 +43,17 @@
             IrcClient.GotPingReply += IrcClientOnGotPingReply;
             IrcClient.GotUserKicked += IrcClientOnGotUserKicked;
             IrcClient.GotUserQuit += IrcClientOnGotUserQuit;
-            IrcClient.GotWelcomeMessage += IrcClientOnGotWelcomeMessage;            
+            IrcClient.GotWelcomeMessage += IrcClientOnGotWelcomeMessage;
         }
         public void Start()
         {
-            IrcClient.Connect("irc.freenode.net", 6667);
+            IrcClient.Connect(IrcConfig.Server, IrcConfig.Port);
         }
 
         private void IrcClientOnGotWelcomeMessage(object sender, SimpleMessageEventArgs simpleMessageEventArgs)
         {
             Log.Info(MethodBase.GetCurrentMethod().Name);
-            IrcClient.Join("#octgn");
+            IrcClient.Join(IrcConfig.Channel);
         }
 
         private void IrcClientOnGotUserQuit(object sender, QuitEventArgs quitEventArgs)
@@ -112,7 +114,7 @@
         private void IrcClientOnGotMessage(object sender, ChatMessageEventArgs args)
         {
             Log.Info(args.Sender.Username + ":" + args.Message);
-            MessageQueue.Get().Add(new MessageItem(args.Sender.Nickname,args.Message,Destination.Xmpp));
+            MessageQueue.Get().Add(new MessageItem(args.Sender.Nickname, args.Message, Destination.Xmpp));
         }
 
         private void IrcClientOnGotLeaveChannel(object sender, JoinLeaveEventArgs joinLeaveEventArgs)
@@ -163,14 +165,51 @@
         private void IrcClientOnClosed(object sender, EventArgs eventArgs)
         {
             Log.Info("Connection Closed");
+            Task.Factory.StartNew(() =>
+                                      {
+                                          Thread.Sleep(10000);
+                                          IrcClient.Connect(IrcConfig.Server, IrcConfig.Port);
+                                      });
         }
 
         private void IrcClientOnConnected(object sender, EventArgs eventArgs)
         {
             //IrcClient.ChangeName("Octgn-Gap");
             Log.Info("Connected");
-            IrcClient.LogIn("Octgn-Gap", "Octgn-Gap", "Octgn-Gap");
+            var un = IrcConfig.BotName;
+            IrcClient.LogIn(un, un, un);
 
+        }
+    }
+    public static class IrcConfig
+    {
+        public static string Channel
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IrcChannel"];
+            }
+        }
+        public static string BotName
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["BotName"];
+            }
+        }
+        public static string Server
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IrcServer"];
+            }
+        }
+        public static int Port
+        {
+            get
+            {
+                return int.Parse(ConfigurationManager.AppSettings["IrcPort"]);
+            }
         }
     }
 }
