@@ -15,8 +15,8 @@
     {
         internal static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        internal IrcClient IrcClient { get; set; }
-        internal IdentServer IdentServer { get; set; }
+        public IrcClient IrcClient { get; set; }
+        public IdentServer IdentServer { get; set; }
         public IrcBot()
         {
             IrcClient = new IrcClient();
@@ -114,6 +114,7 @@
         private void IrcClientOnGotMessage(object sender, ChatMessageEventArgs args)
         {
             Log.Info(args.Sender.Username + ":" + args.Message);
+            if (args.Message.StartsWith("@")) return;
             MessageQueue.Get().Add(new MessageItem(args.Sender.Nickname, args.Message, Destination.Xmpp));
         }
 

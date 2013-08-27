@@ -14,15 +14,15 @@ namespace Gap
 
     using log4net;
 
-    class Program
+    public class Program
     {
         internal static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        internal static IrcBot IrcBot { get; set; }
-        internal static XmppBot XmppBot { get; set; }
+        public static IrcBot IrcBot { get; set; }
+        public static XmppBot XmppBot { get; set; }
         static void Main(string[] args)
         {
-            Task.Factory.StartNew(() => { 
+            Task.Factory.StartNew(() => {
             IrcBot = new IrcBot();
             IrcBot.Start();
             }).ContinueWith(a => { 

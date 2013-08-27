@@ -17,9 +17,9 @@
     public class XmppBot
     {
         internal static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        internal IrcBot IrcBot { get; set; }
-        internal XmppClientConnection Con { get; set; }
-        internal MucManager Muc { get; set; }
+        public IrcBot IrcBot { get; set; }
+        public XmppClientConnection Con { get; set; }
+        public MucManager Muc { get; set; }
         public XmppBot( IrcBot ircBot)
         {
             IrcBot = ircBot;
