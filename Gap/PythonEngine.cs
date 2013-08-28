@@ -37,7 +37,9 @@ clr.AddReference(GapAss)
 import Gap
 from Gap import *
 def lobby(fromuser, message):
-  MessageQueue.Get().Add(MessageItem(fromuser,message,Destination.Xmpp))", out res);
+  MessageQueue.Get().Add(MessageItem(fromuser,message,Destination.Xmpp))
+def uo():
+  return System.Net.WebClient().DownloadString(""http://of.octgn.net:9090/plugins/usersonlineplugin/"");", out res);
         }
 
         #endregion Singleton
