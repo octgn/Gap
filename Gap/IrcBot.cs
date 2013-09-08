@@ -73,7 +73,7 @@
 
         private void IrcClientOnGotNotice(object sender, ChatMessageEventArgs chatMessageEventArgs)
         {
-            Log.InfoFormat("Notice::{0}", chatMessageEventArgs.Message);
+            Log.InfoFormat("Notice::{0}", chatMessageEventArgs.Message.ToString());
         }
 
         private void IrcClientOnGotNameListReply(object sender, NameListReplyEventArgs nameListReplyEventArgs)
@@ -93,7 +93,7 @@
 
         private void IrcClientOnGotMotdText(object sender, SimpleMessageEventArgs simpleMessageEventArgs)
         {
-            Log.Info(simpleMessageEventArgs.Message);
+            Log.Info(simpleMessageEventArgs.Message.ToString());
         }
 
         private void IrcClientOnGotMotdEnd(object sender, EventArgs eventArgs)
@@ -113,7 +113,7 @@
 
         private void IrcClientOnGotMessage(object sender, ChatMessageEventArgs args)
         {
-            Log.Info(args.Sender.Username + ":" + args.Message);
+            Log.Info(args.Sender.Username.ToString() + ":" + args.Message.ToString());
             if (args.Message.StartsWith("@")) return;
             MessageQueue.Get().Add(new MessageItem(args.Sender.Nickname, args.Message, Destination.Xmpp));
         }
@@ -140,7 +140,7 @@
 
         private void IrcClientOnGotChatAction(object sender, ChatMessageEventArgs chatMessageEventArgs)
         {
-            Log.Info(chatMessageEventArgs.Sender + ":" + chatMessageEventArgs.Message);
+            Log.Info(chatMessageEventArgs.Sender.ToString() + ":" + chatMessageEventArgs.Message.ToString());
         }
 
         private void IrcClientOnGotChannelTopicChange(object sender, ChannelTopicChangeEventArgs channelTopicChangeEventArgs)
