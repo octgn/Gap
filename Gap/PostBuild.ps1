@@ -8,8 +8,9 @@
 
 function Get-AssemblyInfoVersion($path)
 {
+	$rp = "'" + (Resolve-Path $path) + "'"
 	# Get the line containing the AssemblyVersion custom attribute
-	$attr = (get-content $path | select-string "AssemblyVersion").ToString()
+	$attr = (get-content $rp | select-string "AssemblyVersion").ToString()
 
 	# Parse the attribute to get the 3 digit version
 	$s = $attr.IndexOf("`"")+1

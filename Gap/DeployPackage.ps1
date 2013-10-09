@@ -41,6 +41,10 @@ catch
 }
 finally
 {
+	#delete nupkg files
+	Get-ChildItem –Path *.nupkg -Force | 
+		foreach ($_) {remove-item $_.fullname}
+
 	Pop-Location
 	[Environment]::CurrentDirectory = $PWD
 }
