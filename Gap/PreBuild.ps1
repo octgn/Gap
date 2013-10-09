@@ -1,7 +1,8 @@
 ﻿function Get-AssemblyInfoVersion($path)
 {
+	$rp = "'" + (Resolve-Path $path) + "'"
 	# Get the line containing the AssemblyVersion custom attribute
-	$attr = (get-content $path | select-string "AssemblyVersion").ToString()
+	$attr = (get-content $rp | select-string "AssemblyVersion").ToString()
 
 	# Parse the attribute to get the 3 digit version
 	$s = $attr.IndexOf("`"")+1
@@ -12,8 +13,8 @@
 
 function Update-FileVersion($path, $oldVersion, $newVersion)
 {
-	$rp = Resolve-Path $path
-	Write-Host "Updating Version " $oldVersion "->" $newVersion " in file " (Resolve-Path $rp)
+	$rp = "'" + (Resolve-Path $path) + "'"
+	Write-Host "Updating Version " $oldVersion "->" $newVersion " in file " $rp
 
 	$content = [IO.File]::ReadAllText($path)
 	$content = $content -replace $oldVersion, $newVersion
