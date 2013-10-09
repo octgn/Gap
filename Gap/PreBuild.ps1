@@ -1,8 +1,8 @@
 ﻿function Get-AssemblyInfoVersion($path)
 {
-	$rp = "'" + (Resolve-Path $path) + "'"
+	$rp = (Resolve-Path $path)
 	# Get the line containing the AssemblyVersion custom attribute
-	$attr = (get-content $rp | select-string "AssemblyVersion").ToString()
+	$attr = (get-content "$rp" | select-string "AssemblyVersion").ToString()
 
 	# Parse the attribute to get the 3 digit version
 	$s = $attr.IndexOf("`"")+1
@@ -13,13 +13,13 @@
 
 function Update-FileVersion($path, $oldVersion, $newVersion)
 {
-	$rp = "'" + (Resolve-Path $path) + "'"
+	$rp = (Resolve-Path $path)
 	Write-Host "Updating Version " $oldVersion "->" $newVersion " in file " $rp
 
-	$content = [IO.File]::ReadAllText($path)
+	$content = [IO.File]::ReadAllText($rp)
 	$content = $content -replace $oldVersion, $newVersion
 
-	[IO.File]::WriteAllText($path,$content)
+	[IO.File]::WriteAllText($rp,$content)
 
 	# I don't use the below method because it screws with the file encoding.
 	#(Get-Content $rp) | 
@@ -29,16 +29,16 @@ function Update-FileVersion($path, $oldVersion, $newVersion)
 
 try
 {
-	$oldVersionString = Get-AssemblyInfoVersion ".\Properties\AssemblyInfo.cs"
-	$oldVersion = New-Object System.Version($oldVersionString)
+	$oldVersionString = Get-AssemblyInfoVersion ".\Gap\Properties\AssemblyInfo.cs"
+    $oldVersion = [System.Version]::Parse($oldVersionString)
 	Write-Host "Old Version: " $oldVersion
 
 	$newVersion = New-Object System.Version($oldVersion.Major, $oldVersion.Minor, $oldVersion.Build, ($oldVersion.Revision+1))
 	
 	Write-Host "New Version: " $newVersion
 
-	Update-FileVersion .\Properties\AssemblyInfo.cs $oldVersion $newVersion
-	Update-FileVersion .\Gap.nuspec $oldVersion $newVersion
+	Update-FileVersion .\Gap\Properties\AssemblyInfo.cs $oldVersion $newVersion
+	Update-FileVersion .\Gap\Gap.nuspec $oldVersion $newVersion
 }
 catch
 {

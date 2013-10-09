@@ -8,9 +8,9 @@
 
 function Get-AssemblyInfoVersion($path)
 {
-	$rp = "'" + (Resolve-Path $path) + "'"
+	$rp = (Resolve-Path $path)
 	# Get the line containing the AssemblyVersion custom attribute
-	$attr = (get-content $rp | select-string "AssemblyVersion").ToString()
+	$attr = (get-content "$rp" | select-string "AssemblyVersion").ToString()
 
 	# Parse the attribute to get the 3 digit version
 	$s = $attr.IndexOf("`"")+1
@@ -21,7 +21,7 @@ function Get-AssemblyInfoVersion($path)
 
 try
 {
-	$versionString = Get-AssemblyInfoVersion ".\Properties\AssemblyInfo.cs"
+	$versionString = Get-AssemblyInfoVersion ".\Gap\Properties\AssemblyInfo.cs"
 	$version = New-Object System.Version($versionString)
 	Push-Changes $version
 }
