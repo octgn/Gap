@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using log4net;
 
 namespace Gap
 {
-    using System.Reflection;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using NetIrc2;
-    using NetIrc2.Events;
-
-    using log4net;
 
     public class Program
     {
@@ -20,22 +13,29 @@ namespace Gap
 
         public static IrcBot IrcBot { get; set; }
         public static XmppBot XmppBot { get; set; }
+        public static WebhookQueueProcessor WebhookQueueProcessor { get; set; }
         static void Main(string[] args)
         {
-            Task.Factory.StartNew(() => {
+            Run().Wait();
+        }
+
+        static async Task Run()
+        {
             IrcBot = new IrcBot();
             IrcBot.Start();
-            }).ContinueWith(a => { 
-
-            Thread.Sleep(10000);
-            
+            await Task.Factory.StartNew(() => Thread.Sleep(10000));
             XmppBot = new XmppBot(IrcBot);
             XmppBot.Start();
-            });
-            while (!Console.KeyAvailable)
+            await Task.Factory.StartNew(() => Thread.Sleep(10000));
+            WebhookQueueProcessor = new WebhookQueueProcessor();
+
+            await Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(1000);
-            }
+                while (!Console.KeyAvailable)
+                {
+                    Thread.Sleep(1000);
+                }
+            });
         }
     }
 }
