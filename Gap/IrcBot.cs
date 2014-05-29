@@ -54,6 +54,8 @@
         {
             Log.Info(MethodBase.GetCurrentMethod().Name);
             IrcClient.Join(IrcConfig.Channel);
+            IrcClient.Join("#octgn");
+            IrcClient.Join("#octgn-dev");
         }
 
         private void IrcClientOnGotUserQuit(object sender, QuitEventArgs quitEventArgs)
@@ -178,7 +180,7 @@
             //IrcClient.ChangeName("Octgn-Gap");
             Log.Info("Connected");
             var un = IrcConfig.BotName;
-            IrcClient.LogIn(un, un, un);
+            IrcClient.LogIn(un, un, un,null,null,IrcConfig.Password);
 
         }
     }
@@ -210,6 +212,14 @@
             get
             {
                 return int.Parse(ConfigurationManager.AppSettings["IrcPort"]);
+            }
+        }
+
+        public static string Password
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["IrcBotPassword"];
             }
         }
     }

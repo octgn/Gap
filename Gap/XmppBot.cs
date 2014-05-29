@@ -99,7 +99,7 @@
             if (msg.From.User.Equals(XmppConfig.MucRoom, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (string.IsNullOrWhiteSpace(msg.Body) || String.IsNullOrWhiteSpace(msg.From.Resource)) return;
-                MessageQueue.Get().Add(new MessageItem(msg.From.Resource,msg.Body,Destination.Irc));
+                MessageQueue.Get().Add(new MessageItem(msg.From.Resource,msg.Body,Destination.IrcOctgnLobby));
             }
         }
 

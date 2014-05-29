@@ -5,6 +5,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using log4net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Octgn.Site.Api.Models;
 
 namespace Gap
@@ -18,6 +19,12 @@ namespace Gap
         {
             _processHooksTimer = new Timer(2000);
             _processHooksTimer.Elapsed += ProcessHooksTimerOnElapsed;
+        }
+
+        public void Start()
+        {
+            Log.Info("Starting WebhookQueueProcessor");
+            _processHooksTimer.Start();
         }
 
         private void ProcessHooksTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -37,20 +44,56 @@ namespace Gap
                     {
                         var mess = JsonConvert.DeserializeObject<WebhookQueueMessage>(m.Body);
 
+                        if(mess.Body.Contains("https://api.github.com/"))
+                        {
+                            // Then it's a github whatever
+                            dynamic d = JsonConvert.DeserializeObject(mess.Body);
+
+                            var ghmessage = "Could not parse github message";
+                            var action = (string)d.action;
+                            switch (action)
+                            {
+                                case "created":
+                                    ghmessage = string.Format("[{0}] {1} commented on the issue #{2}: {3} - {4}",
+                                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
+                                        d.issue.html_url);
+                                    break;
+                                case "reopened":
+                                    ghmessage = string.Format("[{0}] {1} reopened issue #{2}: {3} - {4}",
+                                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
+                                        d.issue.html_url);
+                                    break;
+                                case "closed":
+                                    ghmessage = string.Format("[{0}] {1} closed issue #{2}: {3} - {4}",
+                                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
+                                        d.issue.html_url);
+                                    break;
+                                default:
+                                    Log.Error("Github hook failed to find proper action case\n" + mess.Body);
+                                    break;
+                            }
+                            mess.Body = ghmessage;
+                        }
+
+
                         switch (mess.Endpoint)
                         {
                             case WebhookEndpoint.Octgn:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook",mess.Body,Destination.Irc));
+                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook",mess.Body,Destination.IrcOctgn));
                                 break;
                             case WebhookEndpoint.OctgnDev:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook",mess.Body,Destination.Irc));
+                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", mess.Body, Destination.IrcOctgnDev));
                                 break;
                             case WebhookEndpoint.OctgnLobby:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook",mess.Body,Destination.Xmpp));
+                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", mess.Body, Destination.IrcOctgnLobby));
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(mess.Endpoint.ToString());
                         }
+                        var req2 = new DeleteMessageRequest();
+                        req2.QueueUrl = req.QueueUrl;
+                        req2.ReceiptHandle = m.ReceiptHandle;
+                        client.DeleteMessage(req2);
                     }
                 }
             }
