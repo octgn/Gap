@@ -28,6 +28,7 @@ namespace Gap
             XmppBot.Start();
             await Task.Factory.StartNew(() => Thread.Sleep(10000));
             WebhookQueueProcessor = new WebhookQueueProcessor();
+            WebhookQueueProcessor.Start();
 
             await Task.Factory.StartNew(() =>
             {
