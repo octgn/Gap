@@ -117,6 +117,7 @@
         {
             Log.Info(args.Sender.Username.ToString() + ":" + args.Message.ToString());
             if (args.Message.StartsWith("@")) return;
+            if (args.Recipient.StartsWith("#") && args.Recipient.Equals("#octgn-lobby") == false) return;
             MessageQueue.Get().Add(new MessageItem(args.Sender.Nickname, args.Message, Destination.Xmpp));
         }
 
