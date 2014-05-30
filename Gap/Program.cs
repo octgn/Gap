@@ -23,10 +23,10 @@ namespace Gap
         {
             IrcBot = new IrcBot();
             IrcBot.Start();
-            await Task.Factory.StartNew(() => Thread.Sleep(10000));
+            await TenSeconds();
             XmppBot = new XmppBot(IrcBot);
             XmppBot.Start();
-            await Task.Factory.StartNew(() => Thread.Sleep(10000));
+            await TenSeconds();
             WebhookQueueProcessor = new WebhookQueueProcessor();
             WebhookQueueProcessor.Start();
 
@@ -37,6 +37,11 @@ namespace Gap
                     Thread.Sleep(1000);
                 }
             });
+        }
+
+        static async Task TenSeconds()
+        {
+            await Task.Factory.StartNew(() => Thread.Sleep(10000));
         }
     }
 }
