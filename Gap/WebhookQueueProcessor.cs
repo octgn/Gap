@@ -63,10 +63,18 @@ namespace Gap
                                         d.repository.name, d.sender.login, d.issue.number, d.issue.title,
                                         d.issue.html_url);
                                     break;
+                                case "opened":
+                                    ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
+                                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
+                                        d.issue.html_url);
+                                    break;
                                 case "closed":
                                     ghmessage = string.Format("[{0}] {1} closed issue #{2}: {3} - {4}",
                                         d.repository.name, d.sender.login, d.issue.number, d.issue.title,
                                         d.issue.html_url);
+                                    break;
+                                case "started":
+                                    ghmessage = string.Format("[{0}] {1} starred repository",d.repository.name,d.sender.login);
                                     break;
                                 default:
                                     Log.Error("Github hook failed to find proper action case\n" + mess.Body);
