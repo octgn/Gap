@@ -51,25 +51,25 @@ namespace Gap
                             if (parser == null)
                             {
                                 Log.Error("Could not find parser for message\n" + mess.Body);
-                                mess.Body = "Could not find parser for message";
+                                endmessage = "Could not find parser for message";
                             }
                             else
                             {
                                 Log.Error(parser.GetType().Name + " failed to parse\n" + mess.Body);
-                                mess.Body = parser.GetType().Name + " failed to parse message";
+                                endmessage = parser.GetType().Name + " failed to parse message";
                             }
                         }
 
                         switch (mess.Endpoint)
                         {
                             case WebhookEndpoint.Octgn:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook",mess.Body,Destination.IrcOctgn));
+                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgn));
                                 break;
                             case WebhookEndpoint.OctgnDev:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", mess.Body, Destination.IrcOctgnDev));
+                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgnDev));
                                 break;
                             case WebhookEndpoint.OctgnLobby:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", mess.Body, Destination.IrcOctgnLobby));
+                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgnLobby));
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(mess.Endpoint.ToString());
