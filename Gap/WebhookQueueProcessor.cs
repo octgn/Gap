@@ -75,9 +75,6 @@ namespace Gap
                                     }
                                     else if (d.pull_request != null)
                                     {
-                                        //ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
-                                        //    d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
-                                        //    d.pull_request.html_url);
                                         ghmessage = string.Format("[{0}] {1} closed pull request #{2}: {3} - {4}",
                                             d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
                                             d.pull_request.html_url);
@@ -126,10 +123,10 @@ namespace Gap
                             default:
                                 throw new ArgumentOutOfRangeException(mess.Endpoint.ToString());
                         }
-                        //var req2 = new DeleteMessageRequest();
-                        //req2.QueueUrl = req.QueueUrl;
-                        //req2.ReceiptHandle = m.ReceiptHandle;
-                        //client.DeleteMessage(req2);
+                        var req2 = new DeleteMessageRequest();
+                        req2.QueueUrl = req.QueueUrl;
+                        req2.ReceiptHandle = m.ReceiptHandle;
+                        client.DeleteMessage(req2);
                     }
                 }
             }
