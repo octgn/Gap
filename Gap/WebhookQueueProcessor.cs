@@ -67,11 +67,39 @@ namespace Gap
                                     ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
                                         d.repository.name, d.sender.login, d.issue.number, d.issue.title,
                                         d.issue.html_url);
+                                    if (d.issue != null)
+                                    {
+                                        ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
+                                            d.repository.name, d.sender.login, d.issue.number, d.issue.title,
+                                            d.issue.html_url); ;
+                                    }
+                                    else if (d.pull_request != null)
+                                    {
+                                        //ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
+                                        //    d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
+                                        //    d.pull_request.html_url);
+                                        ghmessage = string.Format("[{0}] {1} closed pull request #{2}: {3} - {4}",
+                                            d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
+                                            d.pull_request.html_url);
+                                    }
+                                    else
+                                        Log.Error("Github hook failed to find proper action case\n" + mess.Body);
                                     break;
                                 case "closed":
-                                    ghmessage = string.Format("[{0}] {1} closed issue #{2}: {3} - {4}",
-                                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
-                                        d.issue.html_url);
+                                    if (d.issue != null)
+                                    {
+                                        ghmessage = string.Format("[{0}] {1} closed issue #{2}: {3} - {4}",
+                                            d.repository.name, d.sender.login, d.issue.number, d.issue.title,
+                                            d.issue.html_url);
+                                    }
+                                    else if (d.pull_request != null)
+                                    {
+                                        ghmessage = string.Format("[{0}] {1} closed pull request #{2}: {3} - {4}",
+                                            d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
+                                            d.pull_request.html_url);
+                                    }
+                                    else
+                                        Log.Error("Github hook failed to find proper action case\n" + mess.Body);
                                     break;
                                 case "started":
                                     ghmessage = string.Format("[{0}] {1} starred repository",d.repository.name,d.sender.login);
@@ -98,10 +126,10 @@ namespace Gap
                             default:
                                 throw new ArgumentOutOfRangeException(mess.Endpoint.ToString());
                         }
-                        var req2 = new DeleteMessageRequest();
-                        req2.QueueUrl = req.QueueUrl;
-                        req2.ReceiptHandle = m.ReceiptHandle;
-                        client.DeleteMessage(req2);
+                        //var req2 = new DeleteMessageRequest();
+                        //req2.QueueUrl = req.QueueUrl;
+                        //req2.ReceiptHandle = m.ReceiptHandle;
+                        //client.DeleteMessage(req2);
                     }
                 }
             }
