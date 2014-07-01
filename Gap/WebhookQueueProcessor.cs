@@ -5,7 +5,6 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using log4net;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Octgn.Site.Api.Models;
 
 namespace Gap
@@ -44,70 +43,22 @@ namespace Gap
                     {
                         var mess = JsonConvert.DeserializeObject<WebhookQueueMessage>(m.Body);
 
-                        if(mess.Body.Contains("https://api.github.com/"))
+                        var endmessage = WebhookParser.Parse(mess);
+
+                        if (endmessage == null)
                         {
-                            // Then it's a github whatever
-                            dynamic d = JsonConvert.DeserializeObject(mess.Body);
-
-                            var ghmessage = "Could not parse github message";
-                            var action = (string)d.action;
-                            switch (action)
+                            var parser = WebhookParser.Get(mess);
+                            if (parser == null)
                             {
-                                case "created":
-                                    ghmessage = string.Format("[{0}] {1} commented on the issue #{2}: {3} - {4}",
-                                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
-                                        d.issue.html_url);
-                                    break;
-                                case "reopened":
-                                    ghmessage = string.Format("[{0}] {1} reopened issue #{2}: {3} - {4}",
-                                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
-                                        d.issue.html_url);
-                                    break;
-                                case "opened":
-                                    ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
-                                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
-                                        d.issue.html_url);
-                                    if (d.issue != null)
-                                    {
-                                        ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
-                                            d.repository.name, d.sender.login, d.issue.number, d.issue.title,
-                                            d.issue.html_url); ;
-                                    }
-                                    else if (d.pull_request != null)
-                                    {
-                                        ghmessage = string.Format("[{0}] {1} closed pull request #{2}: {3} - {4}",
-                                            d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
-                                            d.pull_request.html_url);
-                                    }
-                                    else
-                                        Log.Error("Github hook failed to find proper action case\n" + mess.Body);
-                                    break;
-                                case "closed":
-                                    if (d.issue != null)
-                                    {
-                                        ghmessage = string.Format("[{0}] {1} closed issue #{2}: {3} - {4}",
-                                            d.repository.name, d.sender.login, d.issue.number, d.issue.title,
-                                            d.issue.html_url);
-                                    }
-                                    else if (d.pull_request != null)
-                                    {
-                                        ghmessage = string.Format("[{0}] {1} closed pull request #{2}: {3} - {4}",
-                                            d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
-                                            d.pull_request.html_url);
-                                    }
-                                    else
-                                        Log.Error("Github hook failed to find proper action case\n" + mess.Body);
-                                    break;
-                                case "started":
-                                    ghmessage = string.Format("[{0}] {1} starred repository",d.repository.name,d.sender.login);
-                                    break;
-                                default:
-                                    Log.Error("Github hook failed to find proper action case\n" + mess.Body);
-                                    break;
+                                Log.Error("Could not find parser for message\n" + mess.Body);
+                                mess.Body = "Could not find parser for message";
                             }
-                            mess.Body = ghmessage;
+                            else
+                            {
+                                Log.Error(parser.GetType().Name + " failed to parse\n" + mess.Body);
+                                mess.Body = parser.GetType().Name + " failed to parse message";
+                            }
                         }
-
 
                         switch (mess.Endpoint)
                         {
@@ -123,10 +74,13 @@ namespace Gap
                             default:
                                 throw new ArgumentOutOfRangeException(mess.Endpoint.ToString());
                         }
-                        var req2 = new DeleteMessageRequest();
-                        req2.QueueUrl = req.QueueUrl;
-                        req2.ReceiptHandle = m.ReceiptHandle;
-                        client.DeleteMessage(req2);
+                        if (Program.IrcBot.IrcClient.IsConnected)
+                        {
+                            var req2 = new DeleteMessageRequest();
+                            req2.QueueUrl = req.QueueUrl;
+                            req2.ReceiptHandle = m.ReceiptHandle;
+                            client.DeleteMessage(req2);
+                        }
                     }
                 }
             }
