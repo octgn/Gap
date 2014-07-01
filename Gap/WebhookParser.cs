@@ -60,9 +60,6 @@ namespace Gap
                         d.issue.html_url);
                     break;
                 case "opened":
-                    ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
-                        d.repository.name, d.sender.login, d.issue.number, d.issue.title,
-                        d.issue.html_url);
                     if (d.issue != null)
                     {
                         ghmessage = string.Format("[{0}] {1} opened issue #{2}: {3} - {4}",
