@@ -20,7 +20,8 @@ namespace Gap
             Parsers = new WebhookParser[]
             {
                 new GithubWebhookParser(),
-                new HelpDeskWebhookParser()
+                new HelpDeskWebhookParser(),
+                new JenkinsWebhookParser(), 
             };
         }
 
@@ -198,6 +199,64 @@ namespace Gap
                 if (string.IsNullOrEmpty(temp))
                     return null;
                 return temp;
+            }
+            catch (Exception e)
+            {
+                Log.Error("DoParse", e);
+            }
+            return null;
+        }
+    }
+
+    public class JenkinsWebhookParser : WebhookParser
+    {
+        internal static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        protected override bool IsMatch(WebhookQueueMessage message)
+        {
+            return message.Body.Contains("\"full_url\":\"http://build.octgn.net/");
+        }
+
+        protected override string DoParse(WebhookQueueMessage message)
+        {
+            try
+            {
+                //var temp = "[{{name}} {{number}}] {{phase}}{{state}}{{url}}";
+                //{
+                //  "name": "Octgn.Gap",
+                //  "url": "job\/Octgn.Gap\/",
+                //  "build": {
+                //    "full_url": "http:\/\/build.octgn.net\/job\/Octgn.Gap\/31\/",
+                //    "number": 31,
+                //    "phase": "STARTED",
+                //    "url": "job\/Octgn.Gap\/31\/",
+                //    "scm": {
+                //      "url": "git@bitbucket.org:kellyelton\/octgn-gap.git",
+                //      "branch": "origin\/master",
+                //      "commit": "6811c2eba250e603f31723da19636afd7bf40647"
+                //    },
+                //    "artifacts": {
+                      
+                //    }
+                //  }
+                //}
+
+                dynamic obj = JsonConvert.DeserializeObject(message.Body);
+
+                var phase = ((string) obj.build.phase).ToLower();
+
+                var status = " ";
+                if (obj.build.status != null)
+                {
+                    status = " marked as " + ((string)obj.build.status).ToLower() + " " ;
+                }
+
+                var ret = string.Format("[BUILD {0} {1}] {2}{3}{4}", obj.name, obj.build.number, phase, status,
+                    obj.build.full_url);
+
+                if (string.IsNullOrEmpty(ret))
+                    return null;
+                return ret;
             }
             catch (Exception e)
             {
