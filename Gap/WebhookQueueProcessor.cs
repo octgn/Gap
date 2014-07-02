@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Caching;
 using System.Timers;
+using Amazon.CloudFront.Model;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using IronPython.Modules;
 using log4net;
 using Newtonsoft.Json;
 using Octgn.Site.Api.Models;
@@ -13,6 +17,7 @@ namespace Gap
     {
         internal static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly Timer _processHooksTimer;
+        private readonly MemoryCache _processedMessages = new MemoryCache("ProcessedMessages");
 
         public WebhookQueueProcessor()
         {
@@ -41,6 +46,9 @@ namespace Gap
 
                     foreach (var m in resp.Messages)
                     {
+                        if (_processedMessages.Contains(m.MessageId))
+                            continue;
+                        _processedMessages.Add(m.MessageId,m.MessageId,DateTimeOffset.Now.AddHours(1));
                         var mess = JsonConvert.DeserializeObject<WebhookQueueMessage>(m.Body);
 
                         var endmessage = WebhookParser.Parse(mess);
