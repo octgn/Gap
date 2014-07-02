@@ -104,22 +104,34 @@ namespace Gap
                         break;
                 }
             }
-            else
+            else if (d.commits != null)
             {
-                // So far this is just commits
-                if (d.commits != null)
-                {
                     ghmessage = "";
-                    var ctype = d.commits.GetType();
                     if ((d.commits as JArray).Count == 0)
                     {
                         d.commits = new JArray(d.head_commit);
                     }
                     foreach (var com in d.commits)
                     {
-                        ghmessage += string.Format("[{0}] {1} made a commit {2} {3}", d.repository.name, com.author.name, com.message,com.url);
+                        var title = "";
+                        var desc = "";
+                        using (var sr = new StringReader(com.message as string))
+                        {
+                            title += sr.ReadLine();
+                            sr.ReadLine();
+                            var line = sr.ReadLine();
+                            while (line != null)
+                            {
+                                desc += line;
+                                line = sr.ReadLine();
+                            }
+                        }
+                        ghmessage += string.Format("[{0}] {1} made a commit {2} -> {3} {4}", d.repository.name, com.author.name, title,desc,com.url);
                     }
-                }
+            }
+            else if (d.context != null && (d.context as string).StartsWith("continuous-integration"))
+            {
+                ghmessage = string.Format("[{0}] {1} {2}", d.context,d.description, d.target_url);
             }
             return ghmessage;
         }
