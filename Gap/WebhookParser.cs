@@ -117,7 +117,7 @@ namespace Gap
                     }
                     foreach (var com in d.commits)
                     {
-                        ghmessage += string.Format("[{0}] {1} made a commit {2}\n", d.repository.name, com.author.name, com.message);
+                        ghmessage += string.Format("[{0}] {1} made a commit {2} {3}", d.repository.name, com.author.name, com.message,com.url);
                     }
                 }
             }
