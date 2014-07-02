@@ -42,7 +42,7 @@ namespace Gap
 
         static async Task TenSeconds()
         {
-            await Task.Factory.StartNew(() => Thread.Sleep(1));
+            await Task.Factory.StartNew(() => Thread.Sleep(10000));
         }
 
         public static void Close()
