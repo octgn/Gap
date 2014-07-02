@@ -50,6 +50,14 @@
             IrcClient.Connect(IrcConfig.Server, IrcConfig.Port);
         }
 
+        public void Stop()
+        {
+            if(IrcClient != null)
+                IrcClient.Close();
+            if(IdentServer != null)
+                IdentServer.Stop();
+        }
+
         private void IrcClientOnGotWelcomeMessage(object sender, SimpleMessageEventArgs simpleMessageEventArgs)
         {
             Log.Info(MethodBase.GetCurrentMethod().Name);

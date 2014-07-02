@@ -1,17 +1,15 @@
 ﻿using System.IO;
 using System.Text;
-using System.Threading;
-using IronPython.Hosting;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Concurrent;
+using System.Timers;
+
+using agsXMPP;
+using agsXMPP.protocol.client;
 
 namespace Gap
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Timers;
-
-    using agsXMPP;
-    using agsXMPP.protocol.client;
-    using agsXMPP.protocol.x.muc;
 
     public class MessageQueue
     {
@@ -58,10 +56,18 @@ namespace Gap
             return ret;
         }
 
+        public void Stop()
+        {
+            realEnd = true;
+            Timer.Stop();
+            Timer.Dispose();
+        }
+
         private bool pauseIrc = false;
         private bool pauseXmpp = false;
         private StringBuilder pythonStatement;
         private bool multilinePython = false;
+        private bool realEnd = false;
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
@@ -104,6 +110,13 @@ namespace Gap
                                 pauseXmpp = false;
                                 return;
                             }
+                            else if (item.Message.Equals(":kill", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                Task.Factory.StartNew(Program.Close);
+                                realEnd = true;
+                                Timer.Enabled = false;
+                                return;
+                            }
                         }
                         if (item.Message.Equals(":?"))
                         {
@@ -113,6 +126,7 @@ namespace Gap
                             helpItems.AppendLine("  :startirc - Enable irc sending messages to Xmpp");
                             helpItems.AppendLine("  :stopxmpp - Stop xmpp from sending messages to irc");
                             helpItems.AppendLine("  :startxmpp - Enable xmpp sending messages to irc");
+                            helpItems.AppendLine("  :kill - Kills gap");
                             helpItems.AppendLine("  :> {code} - Process a python command");
                             Add(new MessageItem("HELPZOR", helpItems.ToString(), Destination.IrcOctgnLobby));
                             return;
@@ -227,14 +241,15 @@ namespace Gap
                             Program.IrcBot.IrcClient.Message(channel, item.From + ": " + line);
                             line = sr.ReadLine();
                             if (line != null)
-                                Thread.Sleep(1000);
+                                System.Threading.Thread.Sleep(1000);
                         }
                     }
                 }
             }
             finally
             {
-                Timer.Enabled = true;
+                if (!realEnd)
+                    Timer.Enabled = true;
             }
         }
     }

@@ -1,18 +1,18 @@
-﻿namespace Gap
+﻿using System;
+using System.Configuration;
+using System.Reflection;
+using System.Threading;
+
+using agsXMPP;
+using agsXMPP.Xml.Dom;
+using agsXMPP.protocol.client;
+using agsXMPP.protocol.iq.agent;
+using agsXMPP.protocol.iq.roster;
+using agsXMPP.protocol.x.muc;
+
+using log4net;
+namespace Gap
 {
-    using System;
-    using System.Configuration;
-    using System.Reflection;
-    using System.Threading;
-
-    using agsXMPP;
-    using agsXMPP.Xml.Dom;
-    using agsXMPP.protocol.client;
-    using agsXMPP.protocol.iq.agent;
-    using agsXMPP.protocol.iq.roster;
-    using agsXMPP.protocol.x.muc;
-
-    using log4net;
 
     public class XmppBot
     {
@@ -20,7 +20,7 @@
         public IrcBot IrcBot { get; set; }
         public XmppClientConnection Con { get; set; }
         public MucManager Muc { get; set; }
-        public XmppBot( IrcBot ircBot)
+        public XmppBot(IrcBot ircBot)
         {
             IrcBot = ircBot;
         }
@@ -28,7 +28,12 @@
         public void Start()
         {
             this.Rebuild();
-            Con.Open(XmppConfig.Username,XmppConfig.Password,XmppConfig.Resource);
+            Con.Open(XmppConfig.Username, XmppConfig.Password, XmppConfig.Resource);
+        }
+
+        public void Stop()
+        {
+            Con.Close();
         }
 
         internal void Rebuild()
@@ -99,7 +104,7 @@
             if (msg.From.User.Equals(XmppConfig.MucRoom, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (string.IsNullOrWhiteSpace(msg.Body) || String.IsNullOrWhiteSpace(msg.From.Resource)) return;
-                MessageQueue.Get().Add(new MessageItem(msg.From.Resource,msg.Body,Destination.IrcOctgnLobby));
+                MessageQueue.Get().Add(new MessageItem(msg.From.Resource, msg.Body, Destination.IrcOctgnLobby));
             }
         }
 
@@ -110,7 +115,7 @@
 
         private void XmppOnOnRosterEnd(object sender)
         {
-            Muc.JoinRoom(new Jid(XmppConfig.MucFullRoom),XmppConfig.Username);
+            Muc.JoinRoom(new Jid(XmppConfig.MucFullRoom), XmppConfig.Username);
         }
 
         private void XmppOnOnRosterItem(object sender, RosterItem item)
@@ -133,33 +138,38 @@
         public static string Username
         {
             get
-        {
-            return ConfigurationManager.AppSettings["XmppUsername"];
-        }}
+            {
+                return ConfigurationManager.AppSettings["XmppUsername"];
+            }
+        }
         public static string Password
         {
             get
-        {
-            return ConfigurationManager.AppSettings["XmppPassword"];
-        } }
+            {
+                return ConfigurationManager.AppSettings["XmppPassword"];
+            }
+        }
         public static string Resource
         {
             get
-        {
-            return ConfigurationManager.AppSettings["XmppResource"];
-        } }
+            {
+                return ConfigurationManager.AppSettings["XmppResource"];
+            }
+        }
         public static string Server
         {
             get
-        {
-            return ConfigurationManager.AppSettings["XmppServer"];
-        }}
+            {
+                return ConfigurationManager.AppSettings["XmppServer"];
+            }
+        }
         public static string MucFullRoom
         {
             get
-        {
-            return ConfigurationManager.AppSettings["MucFullRoom"];
-        } }
+            {
+                return ConfigurationManager.AppSettings["MucFullRoom"];
+            }
+        }
         public static string MucRoom
         {
             get
