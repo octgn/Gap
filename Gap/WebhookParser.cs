@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using IronPython.Modules;
 using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,7 +13,7 @@ namespace Gap
 {
     public abstract class WebhookParser
     {
-        private static readonly WebhookParser[] Parsers; 
+        private static readonly WebhookParser[] Parsers;
 
         static WebhookParser()
         {
@@ -106,32 +108,55 @@ namespace Gap
             }
             else if (d.commits != null)
             {
-                    ghmessage = "";
-                    if ((d.commits as JArray).Count == 0)
+                if ((d.commits as JArray).Count == 0)
+                {
+                    d.commits = new JArray(d.head_commit);
+                }
+                var messages = new List<string>();
+                foreach (var com in d.commits)
+                {
+                    var title = "";
+                    var desc = "";
+                    using (var sr = new StringReader(com.message as string))
                     {
-                        d.commits = new JArray(d.head_commit);
-                    }
-                    foreach (var com in d.commits)
-                    {
-                        var title = "";
-                        var desc = "";
-                        using (var sr = new StringReader(com.message as string))
+                        title += sr.ReadLine();
+                        sr.ReadLine();
+                        var line = sr.ReadLine();
+                        while (line != null)
                         {
-                            title += sr.ReadLine();
-                            sr.ReadLine();
-                            var line = sr.ReadLine();
-                            while (line != null)
-                            {
-                                desc += line;
-                                line = sr.ReadLine();
-                            }
+                            desc += line;
+                            line = sr.ReadLine();
                         }
-                        ghmessage += string.Format("[{0}] {1} made a commit {2} -> {3} {4}", d.repository.name, com.author.name, title,desc,com.url);
                     }
+                    messages.Add(string.Format("[{0}] {1} made a commit {2} -> {3} {4}", d.repository.name, com.author.name, title, desc, com.url));
+                }
+                ghmessage = string.Join("\n", messages);
             }
-            else if (d.context != null && (d.context as string).StartsWith("continuous-integration"))
+            else if (d.pages != null)
             {
-                ghmessage = string.Format("[{0}] {1} {2}", d.context,d.description, d.target_url);
+                var messages = new List<string>();
+                foreach (var p in d.pages)
+                {
+                    var sum = " ";
+                    if (p.summary != null)
+                    {
+                        sum = " \"" + p.summary + "\" ";
+                    }
+                    //                       [repo] user action page_name summary url
+                    var mess = string.Format("[{0}] {1} {2} {3}{4}{5}",
+                        d.repository.name, d.sender.login, p.action, p.page_name, sum,
+                        p.html_url);
+                    messages.Add(mess);
+                }
+                ghmessage = string.Join("\n", messages);
+            }
+            else if (d.context != null)
+            {
+                var context = (string)d.context;
+                if (context.StartsWith("continuous-integration"))
+                {
+                    ghmessage = string.Format("[{0}] {1} {2}", d.context, d.description, d.target_url);
+                }
             }
             return ghmessage;
         }
@@ -176,7 +201,7 @@ namespace Gap
             }
             catch (Exception e)
             {
-                Log.Error("DoParse",e);
+                Log.Error("DoParse", e);
             }
             return null;
         }
