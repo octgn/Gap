@@ -59,5 +59,19 @@ def uo():
             if (res == null) return null;
             return res.ToString();
         }
+
+        public void Close()
+        {
+            try
+            {
+                OutputStream.Dispose();
+            }
+            catch{}
+            try
+            {
+                OutputWriter.Dispose();
+            }
+            catch{}
+        }
     }
 }
