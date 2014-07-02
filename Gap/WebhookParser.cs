@@ -118,7 +118,7 @@ namespace Gap
                 {
                     var title = "";
                     var desc = "";
-                    using (var sr = new StringReader(com.message as string))
+                    using (var sr = new StringReader((string)com.message))
                     {
                         title += sr.ReadLine();
                         sr.ReadLine();
