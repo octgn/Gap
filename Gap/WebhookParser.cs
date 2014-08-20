@@ -109,7 +109,13 @@ namespace Gap
                         ghmessage = string.Format("[{0}] {1} added label {2} to issue #{3} - {4}", d.repository.name, d.sender.login,d.label.name,d.issue.number,d.issue.html_url);
                         break;
                     case "unlabeled":
-                        ghmessage = string.Format("[{0}] {1} removed label {2} to issue #{3} - {4}", d.repository.name, d.sender.login,d.label.name,d.issue.number,d.issue.html_url);
+                        ghmessage = string.Format("[{0}] {1} removed label {2} from issue #{3} - {4}", d.repository.name, d.sender.login,d.label.name,d.issue.number,d.issue.html_url);
+                        break;
+                    case "assigned":
+                        ghmessage = string.Format("[{0}] {1} assigned {2} to issue #{3} - {4}", d.repository.name, d.sender.login, d.assignee.login, d.issue.number, d.issue.html_url);
+                        break;
+                    case "unassigned":
+                        ghmessage = string.Format("[{0}] {1} removed {2} from issue #{3} - {4}", d.repository.name, d.sender.login, d.assignee.login, d.issue.number, d.issue.html_url);
                         break;
                 }
             }
