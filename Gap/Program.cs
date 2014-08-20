@@ -31,6 +31,13 @@ namespace Gap
             WebhookQueueProcessor = new WebhookQueueProcessor();
             WebhookQueueProcessor.Start();
 
+            if (IrcBot.IrcClient.IsConnected)
+            {
+                MessageQueue.Get().Add(new MessageItem("SYSTEM",string.Format("OCTGN Gap v{0} Reporting for Duty",Assembly.GetCallingAssembly().GetName().Version),Destination.IrcOctgn));
+                MessageQueue.Get().Add(new MessageItem("SYSTEM",string.Format("OCTGN Gap v{0} Reporting for Duty",Assembly.GetCallingAssembly().GetName().Version),Destination.IrcOctgnDev));
+                MessageQueue.Get().Add(new MessageItem("SYSTEM",string.Format("OCTGN Gap v{0} Reporting for Duty",Assembly.GetCallingAssembly().GetName().Version),Destination.IrcOctgnLobby));
+            }
+
             await Task.Factory.StartNew(() =>
             {
                 while (Console.KeyAvailable == false && KeepRunning)
