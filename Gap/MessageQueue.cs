@@ -239,16 +239,6 @@ namespace Gap
                     }
                     if (pauseXmpp && (item.From != "HELPZOR" || item.From != "PYZOR" || item.From != "ERRZOR"))
                         return;
-                    if (item.Message.ToLower().Contains("test"))
-                    {
-                        var form = string.Format(_getTestReplyMessage(), item.From);
-                        var to = new Jid(XmppConfig.MucFullRoom);
-                        var j = new Jid(to.Bare);
-                        var m = new Message(j, MessageType.groupchat, form);
-                        m.GenerateId();
-                        Program.XmppBot.Con.Send(m);
-                        Program.IrcBot.IrcClient.Message(channel, form);
-                    }
                     using (var sr = new StringReader(item.Message))
                     {
                         var line = sr.ReadLine();
@@ -259,6 +249,33 @@ namespace Gap
                             if (line != null)
                                 System.Threading.Thread.Sleep(1000);
                         }
+                    }
+                    if (item.Message.ToLower().Contains("test"))
+                    {
+                        var form = string.Format(_getTestReplyMessage(), item.From);
+                        form = "Gap: " + form;
+                        var to = new Jid(XmppConfig.MucFullRoom);
+                        var j = new Jid(to.Bare);
+                        var m = new Message(j, MessageType.groupchat, form);
+                        m.GenerateId();
+                        Program.XmppBot.Con.Send(m);
+                        Program.IrcBot.IrcClient.Message(channel, form);
+                    }
+                    else if (item.Message.Trim().ToLower().StartsWith("lmgtfy"))
+                    {
+                        const string furl = "http://www.google.com/search?q={0}&btnI";
+                        var query = item.Message.Substring(6).Trim();
+                        var cq = System.Uri.EscapeUriString(query);
+                        var u = string.Format(furl, cq);
+
+                        var form = string.Format("Here ya go -> {0}", u);
+                        form = "Gap: " + form;
+                        var to = new Jid(XmppConfig.MucFullRoom);
+                        var j = new Jid(to.Bare);
+                        var m = new Message(j, MessageType.groupchat, form);
+                        m.GenerateId();
+                        Program.XmppBot.Con.Send(m);
+                        Program.IrcBot.IrcClient.Message(channel, form);
                     }
                 }
             }
