@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System;
@@ -7,6 +10,7 @@ using System.Timers;
 
 using agsXMPP;
 using agsXMPP.protocol.client;
+using log4net;
 
 namespace Gap
 {
@@ -33,6 +37,8 @@ namespace Gap
         }
 
         #endregion Singleton
+
+        internal static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         internal Timer Timer { get; set; }
         internal ConcurrentQueue<MessageItem> Queue { get; set; }
@@ -233,6 +239,16 @@ namespace Gap
                     }
                     if (pauseXmpp && (item.From != "HELPZOR" || item.From != "PYZOR" || item.From != "ERRZOR"))
                         return;
+                    if (item.Message.ToLower().Contains("test"))
+                    {
+                        var form = string.Format(_getTestReplyMessage(), item.From);
+                        var to = new Jid(XmppConfig.MucFullRoom);
+                        var j = new Jid(to.Bare);
+                        var m = new Message(j, MessageType.groupchat, form);
+                        m.GenerateId();
+                        Program.XmppBot.Con.Send(m);
+                        Program.IrcBot.IrcClient.Message(channel, form);
+                    }
                     using (var sr = new StringReader(item.Message))
                     {
                         var line = sr.ReadLine();
@@ -250,6 +266,51 @@ namespace Gap
             {
                 if (!realEnd)
                     Timer.Enabled = true;
+            }
+        }
+
+        private string[] lastList = {"TEST SUCCESSFULL {0}"};
+        private static readonly Random rand = new Random();
+
+        private string _getTestReplyMessage()
+        {
+            lock (lastList)
+            {
+                try
+                {
+                    using (var wc = new WebClient())
+                    {
+                        var listString =
+                            wc.DownloadString(
+                                "https://gist.githubusercontent.com/kellyelton/fad46bbd3e98d2d16a15/raw/TestResponse.txt");
+                        using (var sr = new StringReader(listString))
+                        {
+                            var line = sr.ReadLine() ?? "";
+                            if (line.Trim() != "!LIST")
+                                throw new Exception("Return data was invalid " + listString);
+
+                            var tempList = new List<string>();
+                            while (line != null)
+                            {
+                                if (line.Contains("{0}"))
+                                    tempList.Add(line);
+                                line = sr.ReadLine();
+                            }
+                            if (tempList.Count == 0)
+                                throw new Exception("TestResponse data had no items " + listString);
+
+                            lastList = tempList.ToArray();
+                        }
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Error _getTestReplyMessage", e);
+                }
+
+                var pick = rand.Next(0, lastList.Length);
+                return lastList[pick];
             }
         }
     }
