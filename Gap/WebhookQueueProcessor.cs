@@ -21,7 +21,7 @@ namespace Gap
 
         public WebhookQueueProcessor()
         {
-            _processHooksTimer = new Timer(500);
+            _processHooksTimer = new Timer(2000);
             _processHooksTimer.Elapsed += ProcessHooksTimerOnElapsed;
         }
 
