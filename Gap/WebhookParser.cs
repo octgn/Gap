@@ -105,6 +105,12 @@ namespace Gap
                     case "started":
                         ghmessage = string.Format("[{0}] {1} starred repository", d.repository.name, d.sender.login);
                         break;
+                    case "labeled":
+                        ghmessage = string.Format("[{0}] {1} added label {2} to issue #{3} - {4}", d.repository.name, d.sender.login,d.label.name,d.issue.number,d.issue.html_url);
+                        break;
+                    case "unlabeled":
+                        ghmessage = string.Format("[{0}] {1} removed label {2} to issue #{3} - {4}", d.repository.name, d.sender.login,d.label.name,d.issue.number,d.issue.html_url);
+                        break;
                 }
             }
             else if (d.commits != null)

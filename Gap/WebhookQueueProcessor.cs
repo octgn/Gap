@@ -21,7 +21,7 @@ namespace Gap
 
         public WebhookQueueProcessor()
         {
-            _processHooksTimer = new Timer(2000);
+            _processHooksTimer = new Timer(500);
             _processHooksTimer.Elapsed += ProcessHooksTimerOnElapsed;
         }
 
@@ -52,7 +52,7 @@ namespace Gap
                         var mess = JsonConvert.DeserializeObject<WebhookQueueMessage>(m.Body);
 
                         var endmessage = WebhookParser.Parse(mess);
-
+                        var parsed = true;
                         if (endmessage == null)
                         {
                             var parser = WebhookParser.Get(mess);
@@ -66,6 +66,7 @@ namespace Gap
                                 Log.Error(parser.GetType().Name + " failed to parse\n" + mess.Body);
                                 endmessage = parser.GetType().Name + " failed to parse message";
                             }
+                            parsed = false;
                         }
 
                         switch (mess.Endpoint)
@@ -82,7 +83,7 @@ namespace Gap
                             default:
                                 throw new ArgumentOutOfRangeException(mess.Endpoint.ToString());
                         }
-                        if (Program.IrcBot.IrcClient.IsConnected)
+                        if (Program.IrcBot.IrcClient.IsConnected && parsed)
                         {
                             var req2 = new DeleteMessageRequest();
                             req2.QueueUrl = req.QueueUrl;
