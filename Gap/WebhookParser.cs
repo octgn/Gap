@@ -174,6 +174,10 @@ namespace Gap
             {
                 ghmessage = string.Format("[{0}] {1} created the tag {2}", d.repository.name, d.sender.login, d.@ref);
             }
+			else if (d.forkee != null)
+			{
+			    ghmessage = string.Format("[{0}] {1} forked repository {2}", d.repository.name, d.forkee.owner.login,d.forkee.html_url);
+			}
             return ghmessage;
         }
     }
