@@ -170,9 +170,16 @@ namespace Gap
                     ghmessage = string.Format("[{0}] {1} {2}", d.context, d.description, d.target_url);
                 }
             }
-			else if(d.ref_type != null && d.@ref != null && d.ref_type == "tag")
+			else if(d.ref_type != null && d.@ref != null)
             {
-                ghmessage = string.Format("[{0}] {1} created the tag {2}", d.repository.name, d.sender.login, d.@ref);
+                if (d.ref_type == "tag")
+                {
+                    ghmessage = string.Format("[{0}] {1} created the tag {2}", d.repository.name, d.sender.login, d.@ref);
+                }
+                else if (d.ref_type == "branch")
+                {
+                    ghmessage = string.Format("[{0}] {1} created the branch {2}", d.repository.name, d.sender.login, d.@ref);
+                }
             }
             return ghmessage;
         }
