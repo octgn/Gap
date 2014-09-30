@@ -82,7 +82,7 @@ namespace Gap
                         }
                         else if (d.pull_request != null)
                         {
-                            ghmessage = string.Format("[{0}] {1} closed pull request #{2}: {3} - {4}",
+                            ghmessage = string.Format("[{0}] {1} opened pull request #{2}: {3} - {4}",
                                 d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
                                 d.pull_request.html_url);
                         }
@@ -116,6 +116,13 @@ namespace Gap
                     case "unassigned":
                         ghmessage = string.Format("[{0}] {1} removed {2} from issue #{3} - {4}", d.repository.name, d.sender.login, d.assignee.login, d.issue.number, d.issue.html_url);
                         break;
+                    case "synchronize":
+                    {
+                        ghmessage = string.Format("[{0}] {1} updated pull request #{2}: {3} - {4}",
+                                d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
+                                d.pull_request.html_url);
+                        break;
+                    }
                 }
             }
             else if (d.commits != null)
