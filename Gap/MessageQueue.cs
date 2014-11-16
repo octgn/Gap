@@ -252,14 +252,17 @@ namespace Gap
                     }
                     if (item.Message.ToLower().Contains("test"))
                     {
-                        var form = string.Format(_getTestReplyMessage(), item.From);
-                        form = "Gap: " + form;
-                        var to = new Jid(XmppConfig.MucFullRoom);
-                        var j = new Jid(to.Bare);
-                        var m = new Message(j, MessageType.groupchat, form);
-                        m.GenerateId();
-                        Program.XmppBot.Con.Send(m);
-                        Program.IrcBot.IrcClient.Message(channel, form);
+                        if (item.From.StartsWith("Cpt. Hook") == false)
+                        {
+                            var form = string.Format(_getTestReplyMessage(), item.From);
+                            form = "Gap: " + form;
+                            var to = new Jid(XmppConfig.MucFullRoom);
+                            var j = new Jid(to.Bare);
+                            var m = new Message(j, MessageType.groupchat, form);
+                            m.GenerateId();
+                            Program.XmppBot.Con.Send(m);
+                            Program.IrcBot.IrcClient.Message(channel, form);
+                        }
                     }
                     else if (item.Message.Trim().ToLower().StartsWith("lmgtfy"))
                     {
@@ -286,7 +289,7 @@ namespace Gap
             }
         }
 
-        private string[] lastList = {"TEST SUCCESSFULL {0}"};
+        private string[] lastList = { "TEST SUCCESSFULL {0}" };
         private static readonly Random rand = new Random();
 
         private string _getTestReplyMessage()
