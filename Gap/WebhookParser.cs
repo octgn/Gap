@@ -125,11 +125,18 @@ namespace Gap
                     }
                 }
             }
+            else if (d.@ref != null && d.deleted != null && d.deleted)
+            {
+                ghmessage = string.Format("[{0}] {1} deleted the branch {2}", d.repository.name, d.pusher.name, d.@ref);
+            }
             else if (d.commits != null)
             {
                 if ((d.commits as JArray).Count == 0)
                 {
-                    d.commits = new JArray(d.head_commit);
+                    if (d.head_commit != null)
+                        d.commits = new JArray(d.head_commit);
+                    else
+                        return null;
                 }
                 var messages = new List<string>();
                 foreach (var com in d.commits)
