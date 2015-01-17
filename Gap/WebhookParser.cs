@@ -125,7 +125,7 @@ namespace Gap
                     }
                 }
             }
-            else if (d.@ref != null && d.deleted != null && d.deleted)
+            else if (d.@ref != null && d.deleted != null && (bool)d.deleted)
             {
                 ghmessage = string.Format("[{0}] {1} deleted the branch {2}", d.repository.name, d.pusher.name, d.@ref);
             }
