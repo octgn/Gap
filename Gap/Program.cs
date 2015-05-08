@@ -23,11 +23,11 @@ namespace Gap
         static async Task Run()
         {
             IrcBot = new IrcBot();
-            //IrcBot.Start();
-            //await TenSeconds();
+            IrcBot.Start();
+            await TenSeconds();
             XmppBot = new XmppBot(IrcBot);
-            //XmppBot.Start();
-            //await TenSeconds();
+            XmppBot.Start();
+            await TenSeconds();
             WebhookQueueProcessor = new WebhookQueueProcessor();
             WebhookQueueProcessor.Start();
 
