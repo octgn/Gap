@@ -48,7 +48,7 @@ namespace Gap
                     {
                         if (_processedMessages.Contains(m.MessageId))
                             continue;
-                        _processedMessages.Add(m.MessageId,m.MessageId,DateTimeOffset.Now.AddHours(1));
+                        _processedMessages.Add(m.MessageId, m.MessageId, DateTimeOffset.Now.AddHours(1));
                         var mess = JsonConvert.DeserializeObject<WebhookQueueMessage>(m.Body);
 
                         var endmessage = WebhookParser.Parse(mess);
@@ -68,21 +68,24 @@ namespace Gap
                             }
                             parsed = false;
                         }
-
-                        switch (mess.Endpoint)
+                        if (endmessage != "IGNORE")
                         {
-                            case WebhookEndpoint.Octgn:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgn));
-                                break;
-                            case WebhookEndpoint.OctgnDev:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgnDev));
-                                break;
-                            case WebhookEndpoint.OctgnLobby:
-                                MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgnLobby));
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(mess.Endpoint.ToString());
+                            switch (mess.Endpoint)
+                            {
+                                case WebhookEndpoint.Octgn:
+                                    MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgn));
+                                    break;
+                                case WebhookEndpoint.OctgnDev:
+                                    MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgnDev));
+                                    break;
+                                case WebhookEndpoint.OctgnLobby:
+                                    MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgnLobby));
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException(mess.Endpoint.ToString());
+                            }
                         }
+
                         if (Program.IrcBot.IrcClient.IsConnected && parsed)
                         {
                             var req2 = new DeleteMessageRequest();
@@ -95,7 +98,7 @@ namespace Gap
             }
             catch (Exception e)
             {
-                Log.Error("ProcessHooksTimerOnElapsed",e);
+                Log.Error("ProcessHooksTimerOnElapsed", e);
             }
             finally
             {

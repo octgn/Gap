@@ -195,9 +195,31 @@ namespace Gap
                             }
                             else if (d.description == "One or more of this commit's parents has contributors who have not signed the Contributor License Agreement.")
                             {
-                                ghmessage = string.Format("[OCTGN] {0} commited {1}, but still hasn't signed the CLA {2}", d.commit.commit.author.name, d.commit.url, d.target_url);
+                                ghmessage = string.Format("[OCTGN] {0} commited {1}, but still hasn't signed the CLA {2}", d.commit.commit.author.name, d.commit.html_url, d.target_url);
                             }
                         }
+                        else if (d.state == "success")
+                        {
+                            if (d.description == "All contributors have signed the Contributor License Agreement.")
+                            {
+                                ghmessage = "IGNORE";
+                            }
+                        }
+                    }
+                }
+                else if (context.StartsWith("default"))
+                {
+                    if (d.description.ToString().Trim().StartsWith("Build started"))
+                    {
+                        ghmessage = string.Format("[OCTGN] Build started for {0}", d.commit.html_url);
+                    }
+                    else if (d.description == "Build finished.")
+                    {
+                        ghmessage = string.Format("[OCTGN] Build {0} for {1}", d.state, d.commit.html_url);
+                    }
+                    else if (d.description.ToString().Trim().StartsWith("Build triggered"))
+                    {
+                        ghmessage = string.Format("[OCTGN] Build triggered for {0}", d.commit.html_url);
                     }
                 }
             }
