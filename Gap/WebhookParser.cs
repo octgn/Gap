@@ -183,6 +183,23 @@ namespace Gap
                 {
                     ghmessage = string.Format("[{0}] {1} {2}", d.context, d.description, d.target_url);
                 }
+                else if(context.StartsWith("clahub"))
+                {
+                    if(d.state != null)
+                    {
+                        if(d.state == "failure")
+                        {
+                            if (d.description == "Not all contributors have signed the Contributor License Agreement.")
+                            {
+                                ghmessage = string.Format("[OCTGN] {0} {1}", d.description, d.target_url);
+                            }
+                            else if (d.description == "One or more of this commit's parents has contributors who have not signed the Contributor License Agreement.")
+                            {
+                                ghmessage = string.Format("[OCTGN] {0} commited {1}, but still hasn't signed the CLA {2}", d.commit.commit.author.name, d.commit.url, d.target_url);
+                            }
+                        }
+                    }
+                }
             }
 			else if(d.ref_type != null && d.@ref != null)
             {
