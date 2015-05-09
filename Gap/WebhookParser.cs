@@ -207,7 +207,7 @@ namespace Gap
                         }
                     }
                 }
-                else if (context.StartsWith("default"))
+                else if (context.StartsWith("Build"))
                 {
                     if (d.description.ToString().Trim().StartsWith("Build started"))
                     {
@@ -221,6 +221,10 @@ namespace Gap
                     {
                         ghmessage = string.Format("[OCTGN] Build triggered for {0}", d.commit.html_url);
                     }
+                }
+                else if(context == "OCTGN-PRTester")
+                {
+                    ghmessage = string.Format("[OCTGN] " + d.description);
                 }
             }
 			else if(d.ref_type != null && d.@ref != null)
