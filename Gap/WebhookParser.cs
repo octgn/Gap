@@ -68,9 +68,18 @@ namespace Gap
                             d.issue.html_url);
                         break;
                     case "reopened":
-                        ghmessage = string.Format("[{0}] {1} reopened issue #{2}: {3} - {4}",
-                            d.repository.name, d.sender.login, d.issue.number, d.issue.title,
-                            d.issue.html_url);
+                        if (d.issue != null)
+                        {
+                            ghmessage = string.Format("[{0}] {1} reopened issue #{2}: {3} - {4}",
+                                d.repository.name, d.sender.login, d.issue.number, d.issue.title,
+                                d.issue.html_url);
+                        }
+                        else if(d.pull_request != null)
+                        {
+                            ghmessage = string.Format("[{0}] {1} reopened pull request #{2}: {3} - {4}",
+                                d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
+                                d.pull_request.html_url);
+                        }
                         break;
                     case "opened":
                         if (d.issue != null)
@@ -242,6 +251,10 @@ namespace Gap
 			{
 			    ghmessage = string.Format("[{0}] {1} forked repository {2}", d.repository.name, d.forkee.owner.login,d.forkee.html_url);
 			}
+            else if(d.team != null)
+            {
+                ghmessage = string.Format("[OCTGN] Team {0} created", d.team.name);
+            }
             return ghmessage;
         }
     }
