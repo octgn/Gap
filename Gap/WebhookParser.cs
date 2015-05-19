@@ -18,9 +18,10 @@ namespace Gap
         {
             Parsers = new WebhookParser[]
             {
+                new RawWebhookParser(), 
                 new GithubWebhookParser(),
                 new HelpDeskWebhookParser(),
-                new JenkinsWebhookParser(), 
+                new JenkinsWebhookParser(),
             };
         }
 
@@ -37,6 +38,20 @@ namespace Gap
 
         protected abstract bool IsMatch(WebhookQueueMessage message);
         protected abstract string DoParse(WebhookQueueMessage message);
+    }
+
+    public class RawWebhookParser : WebhookParser
+    {
+        protected override bool IsMatch(WebhookQueueMessage message)
+        {
+            return message.Body.StartsWith("RAW:");
+        }
+
+        protected override string DoParse(WebhookQueueMessage message)
+        {
+            var mess = message.Body.Substring(4);
+            return mess;
+        }
     }
 
     public class GithubWebhookParser : WebhookParser
