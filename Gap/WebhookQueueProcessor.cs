@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
 using System.Timers;
@@ -64,7 +65,15 @@ namespace Gap
                             else
                             {
                                 Log.Error(parser.GetType().Name + " failed to parse\n" + mess.Body);
-                                endmessage = parser.GetType().Name + " failed to parse message";
+                                if (parser.GetType() == typeof (GithubWebhookParser))
+                                {
+                                    endmessage = parser.GetType().Name + " failed to parse message of event type: " +
+                                                 mess.Headers["X-Github-Event"].First();
+                                }
+                                else
+                                {
+                                    endmessage = parser.GetType().Name + " failed to parse message";
+                                }
                             }
                             parsed = false;
                         }
