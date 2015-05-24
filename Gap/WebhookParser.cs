@@ -322,6 +322,12 @@ namespace Gap
                                d.repository.name, d.sender.login, d.action, d.issue.number, d.issue.title,
                                d.issue.html_url);
                     break;
+                case "member":
+                    ghMessage = string.Format("[{0}] {1} was {2} as collaborator on repo: {3}", d.repository.name, d.member.login, d.action, d.repository.name);
+                    break;
+                case "membership":
+                    ghMessage = String.Format("[TEAM {0}] {1} was {2} from team: {3} by {4}", d.team.name, d.member.login, d.action, d.team.name, d.sender.login);
+                    break;
                 case "pull_request_review_comment":
                     ghMessage = string.Format("[{0}] {1} commented on pull request {2} {3}", d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.html_url);
                     break;
