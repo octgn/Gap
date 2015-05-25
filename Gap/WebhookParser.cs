@@ -443,7 +443,6 @@ namespace Gap
                     break;
             }
 
-
             return (ghMessage);
         }
     }
