@@ -89,7 +89,7 @@ namespace Gap
                                 d.repository.name, d.sender.login, d.issue.number, d.issue.title,
                                 d.issue.html_url);
                         }
-                        else if(d.pull_request != null)
+                        else if (d.pull_request != null)
                         {
                             ghmessage = string.Format("[{0}] {1} reopened pull request #{2}: {3} - {4}",
                                 d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
@@ -129,10 +129,10 @@ namespace Gap
                         ghmessage = string.Format("[{0}] {1} starred repository", d.repository.name, d.sender.login);
                         break;
                     case "labeled":
-                        ghmessage = string.Format("[{0}] {1} added label {2} to issue #{3} - {4}", d.repository.name, d.sender.login,d.label.name,d.issue.number,d.issue.html_url);
+                        ghmessage = string.Format("[{0}] {1} added label {2} to issue #{3} - {4}", d.repository.name, d.sender.login, d.label.name, d.issue.number, d.issue.html_url);
                         break;
                     case "unlabeled":
-                        ghmessage = string.Format("[{0}] {1} removed label {2} from issue #{3} - {4}", d.repository.name, d.sender.login,d.label.name,d.issue.number,d.issue.html_url);
+                        ghmessage = string.Format("[{0}] {1} removed label {2} from issue #{3} - {4}", d.repository.name, d.sender.login, d.label.name, d.issue.number, d.issue.html_url);
                         break;
                     case "assigned":
                         ghmessage = string.Format("[{0}] {1} assigned {2} to issue #{3} - {4}", d.repository.name, d.sender.login, d.assignee.login, d.issue.number, d.issue.html_url);
@@ -141,12 +141,12 @@ namespace Gap
                         ghmessage = string.Format("[{0}] {1} removed {2} from issue #{3} - {4}", d.repository.name, d.sender.login, d.assignee.login, d.issue.number, d.issue.html_url);
                         break;
                     case "synchronize":
-                    {
-                        ghmessage = string.Format("[{0}] {1} updated pull request #{2}: {3} - {4}",
-                                d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
-                                d.pull_request.html_url);
-                        break;
-                    }
+                        {
+                            ghmessage = string.Format("[{0}] {1} updated pull request #{2}: {3} - {4}",
+                                    d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.title,
+                                    d.pull_request.html_url);
+                            break;
+                        }
                 }
             }
             else if (d.@ref != null && d.deleted != null && (bool)d.deleted)
@@ -207,11 +207,11 @@ namespace Gap
                 {
                     ghmessage = string.Format("[{0}] {1} {2}", d.context, d.description, d.target_url);
                 }
-                else if(context.StartsWith("clahub"))
+                else if (context.StartsWith("clahub"))
                 {
-                    if(d.state != null)
+                    if (d.state != null)
                     {
-                        if(d.state == "failure")
+                        if (d.state == "failure")
                         {
                             if (d.description == "Not all contributors have signed the Contributor License Agreement.")
                             {
@@ -246,12 +246,12 @@ namespace Gap
                         ghmessage = string.Format("[OCTGN] Build triggered for {0}", d.commit.html_url);
                     }
                 }
-                else if(context == "OCTGN-PRTester")
+                else if (context == "OCTGN-PRTester")
                 {
                     ghmessage = string.Format("[OCTGN] " + d.description);
                 }
             }
-			else if(d.ref_type != null && d.@ref != null)
+            else if (d.ref_type != null && d.@ref != null)
             {
                 if (d.ref_type == "tag")
                 {
@@ -262,11 +262,11 @@ namespace Gap
                     ghmessage = string.Format("[{0}] {1} created the branch {2}", d.repository.name, d.sender.login, d.@ref);
                 }
             }
-			else if (d.forkee != null)
-			{
-			    ghmessage = string.Format("[{0}] {1} forked repository {2}", d.repository.name, d.forkee.owner.login,d.forkee.html_url);
-			}
-            else if(d.team != null)
+            else if (d.forkee != null)
+            {
+                ghmessage = string.Format("[{0}] {1} forked repository {2}", d.repository.name, d.forkee.owner.login, d.forkee.html_url);
+            }
+            else if (d.team != null)
             {
                 ghmessage = string.Format("[OCTGN] Team {0} created", d.team.name);
             }
@@ -279,17 +279,17 @@ namespace Gap
             string eventType = null;
             try
             {
-               eventType = message.Headers["X-GitHub-Event"].First();
+                eventType = message.Headers["X-GitHub-Event"].First();
             }
             catch (Exception ex)
             {
-                
+
             }
             if (eventType == null)
             {
                 ghMessage = DoParse2(message);
             }
-            
+
             dynamic d = JsonConvert.DeserializeObject(message.Body);
 
             switch (eventType)
@@ -539,19 +539,19 @@ namespace Gap
                 //      "commit": "6811c2eba250e603f31723da19636afd7bf40647"
                 //    },
                 //    "artifacts": {
-                      
+
                 //    }
                 //  }
                 //}
 
                 dynamic obj = JsonConvert.DeserializeObject(message.Body);
 
-                var phase = ((string) obj.build.phase).ToLower();
+                var phase = ((string)obj.build.phase).ToLower();
 
                 var status = " ";
                 if (obj.build.status != null)
                 {
-                    status = " marked as " + ((string)obj.build.status).ToLower() + " " ;
+                    status = " marked as " + ((string)obj.build.status).ToLower() + " ";
                 }
 
                 var ret = string.Format("[BUILD {0} {1}] {2}{3}{4}", obj.name, obj.build.number, phase, status,
