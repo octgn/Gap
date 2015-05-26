@@ -67,7 +67,7 @@ namespace Gap
             return ret;
         }
 
-        protected override string DoParse(WebhookQueueMessage message)
+        protected string DoParse2(WebhookQueueMessage message)
         {
             dynamic d = JsonConvert.DeserializeObject(message.Body);
 
@@ -273,7 +273,7 @@ namespace Gap
             return ghmessage;
         }
 
-        protected string DoParse2(WebhookQueueMessage message)
+        protected override string DoParse(WebhookQueueMessage message)
         {
             string ghMessage = null;
             string eventType = null;
