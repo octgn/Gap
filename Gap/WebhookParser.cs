@@ -344,6 +344,9 @@ namespace Gap
                 case "pull_request_review_comment":
                     ghMessage = string.Format("[{0}] {1} commented on pull request {2} {3}", d.repository.name, d.sender.login, d.pull_request.number, d.pull_request.html_url);
                     break;
+                case "ping":
+                    ghMessage = "IGNORE";
+                    break;
                 case "pull_request":
                     if (d.action == "closed")
                     {
@@ -363,7 +366,7 @@ namespace Gap
                     else
                     {
                         ghMessage = string.Format("[{0}] {1} {2} pull request #{3}: {4} - {5}",
-                                d.repository.name, d.sender.login, d.pull_request.number, d.action, d.pull_request.title,
+                                d.repository.name, d.sender.login, d.action, d.pull_request.number, d.pull_request.title,
                                 d.pull_request.html_url);
                     }
                     break;
@@ -394,6 +397,9 @@ namespace Gap
                         commitMessages.Add(string.Format("[{0}] {1} made a commit {2} -> {3} {4}", d.repository.name, com.author.name, title, desc, com.url));
                     }
                     ghMessage = string.Join("\n", commitMessages);
+                    break;
+                case "status":
+                    ghMessage = "IGNORE";
                     break;
                 case "team_add":
                     ghMessage = string.Format("[{0}] add repo {1}", d.team.name, d.repository.name);
