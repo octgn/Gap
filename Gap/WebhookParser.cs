@@ -395,6 +395,8 @@ namespace Gap
                     }
                     ghMessage = string.Join("\n", commitMessages);
                     break;
+                case "status":
+                    ghMessage = "IGNORE";
                 case "team_add":
                     ghMessage = string.Format("[{0}] add repo {1}", d.team.name, d.repository.name);
                     break;
