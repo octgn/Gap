@@ -67,7 +67,7 @@ namespace Gap
             return ret;
         }
 
-        protected override string DoParse(WebhookQueueMessage message)
+        protected string DoParse2(WebhookQueueMessage message)
         {
             dynamic d = JsonConvert.DeserializeObject(message.Body);
 
@@ -273,10 +273,23 @@ namespace Gap
             return ghmessage;
         }
 
-        protected string DoParse2(WebhookQueueMessage message)
+        protected override string DoParse(WebhookQueueMessage message)
         {
-            string eventType = message.Headers["X-Github-Event"].First();
             string ghMessage = null;
+            string eventType = null;
+            try
+            {
+               eventType = message.Headers["X-GitHub-Event"].First();
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            if (eventType == null)
+            {
+                ghMessage = DoParse2(message);
+            }
+            
             dynamic d = JsonConvert.DeserializeObject(message.Body);
 
             switch (eventType)

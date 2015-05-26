@@ -68,7 +68,7 @@ namespace Gap
                                 if (parser.GetType() == typeof (GithubWebhookParser))
                                 {
                                     endmessage = parser.GetType().Name + " failed to parse message of event type: " +
-                                                 mess.Headers["X-Github-Event"].First();
+                                                 mess.Headers["X-GitHub-Event"].First();
                                 }
                                 else
                                 {
