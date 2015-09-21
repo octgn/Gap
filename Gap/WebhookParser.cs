@@ -144,15 +144,16 @@ namespace Gap
                 case "pull_request":
                     if (d.action == "closed")
                     {
-                        if (d.merged)
+                        var v = (bool) d.pull_request.merged;
+                        if ((bool)d.pull_request.merged)
                         {
-                            ghMessage = string.Format("[{0}] {1} merged pull request #{3}: {4} - {5}",
+                            ghMessage = string.Format("[{0}] {1} merged pull request #{2}: {3} - {4}",
                                 d.repository.name, d.merged_by, d.pull_request.number, d.pull_request.title,
                                 d.pull_request.html_url);
                         }
                         else
                         {
-                            ghMessage = string.Format("[{0}] {1} closed pull request #{3}: {4} - {5}",
+                            ghMessage = string.Format("[{0}] {1} closed pull request #{2}: {3} - {4}",
                                 d.repository.name, d.merged_by, d.pull_request.number, d.pull_request.title,
                                 d.pull_request.html_url);
                         }
