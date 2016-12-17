@@ -60,12 +60,11 @@ namespace Gap
                 MessageQueue.Get().Stop();
                 IrcBot.Stop();
                 XmppBot.Stop();
-                PythonEngine.Get().Close();
             }
             catch (Exception e)
             {
                 Log.Error("Close",e);
-            } 
+            }
             KeepRunning = false;
         }
     }

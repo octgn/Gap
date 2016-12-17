@@ -71,8 +71,6 @@ namespace Gap
 
         private bool pauseIrc = false;
         private bool pauseXmpp = false;
-        private StringBuilder pythonStatement;
-        private bool multilinePython = false;
         private bool realEnd = false;
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -133,78 +131,7 @@ namespace Gap
                             helpItems.AppendLine("  :stopxmpp - Stop xmpp from sending messages to irc");
                             helpItems.AppendLine("  :startxmpp - Enable xmpp sending messages to irc");
                             helpItems.AppendLine("  :kill - Kills gap");
-                            helpItems.AppendLine("  :> {code} - Process a python command");
                             Add(new MessageItem("HELPZOR", helpItems.ToString(), Destination.IrcOctgnLobby));
-                            return;
-                        }
-                        if (item.Message.StartsWith(":>{"))
-                        {
-                            this.multilinePython = true;
-                            item.Message = ":>" + item.Message.Substring(3, item.Message.Length - 3);
-                            pythonStatement = new StringBuilder();
-                        }
-                        if (item.Message.StartsWith(":>}"))
-                        {
-                            this.multilinePython = false;
-                            try
-                            {
-                                string cout = "";
-                                var res = PythonEngine.Get().RunString(pythonStatement.ToString(), out cout);
-                                var output = new StringBuilder();
-                                using (var sr = new StringReader(cout))
-                                {
-                                    var l = sr.ReadLine();
-                                    while (l != null)
-                                    {
-                                        output.AppendLine("> " + l);
-                                        l = sr.ReadLine();
-                                    }
-                                }
-                                if (res != null)
-                                    output.AppendLine("= " + res);
-
-                                Add(new MessageItem("", output.ToString(), Destination.IrcOctgnLobby));
-                            }
-                            catch (Exception e)
-                            {
-                                Add(new MessageItem("ERRZOR", e.Message, Destination.IrcOctgnLobby));
-                            }
-                            finally
-                            {
-                                pythonStatement = null;
-                            }
-                            return;
-                        }
-                        if (item.Message.StartsWith(":>"))
-                        {
-                            try
-                            {
-                                if (this.multilinePython)
-                                {
-                                    this.pythonStatement.AppendLine(item.Message.Substring(2, item.Message.Length - 2));
-                                    return;
-                                }
-                                string cout = "";
-                                var res = PythonEngine.Get().RunString(item.Message.Substring(2, item.Message.Length - 2), out cout);
-                                var output = new StringBuilder();
-                                using (var sr = new StringReader(cout))
-                                {
-                                    var l = sr.ReadLine();
-                                    while (l != null)
-                                    {
-                                        output.AppendLine("> " + l);
-                                        l = sr.ReadLine();
-                                    }
-                                }
-                                if (res != null)
-                                    output.AppendLine("= " + res);
-
-                                Add(new MessageItem("", output.ToString(), Destination.IrcOctgnLobby));
-                            }
-                            catch (Exception e)
-                            {
-                                Add(new MessageItem("ERRZOR", e.Message, Destination.IrcOctgnLobby));
-                            }
                             return;
                         }
                         Add(new MessageItem("ERRZOR", "Unknown Command: " + item.Message, Destination.IrcOctgnLobby));
@@ -217,7 +144,7 @@ namespace Gap
                     var j = new Jid(to.Bare);
                     var m = new Message(j, MessageType.groupchat, item.From + ": " + item.Message);
                     m.GenerateId();
-                    //m.XEvent = new Event { Delivered = true, Displayed = true };  
+                    //m.XEvent = new Event { Delivered = true, Displayed = true };
                     Program.XmppBot.Con.Send(m);
                 }
                 else
