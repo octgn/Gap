@@ -81,6 +81,7 @@
       <HintPath>..\packages\Octgn.Site.Api.1.0.1.153\lib\net45\Octgn.Site.Api.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="SlackAPI, Version=1.0.4.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SlackAPI.1.0.5.1\lib\net45\SlackAPI.dll</HintPath>
       <Private>True</Private>
@@ -96,6 +97,7 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -103,10 +105,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="IrcBot.cs" />
     <Compile Include="MessageQueue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SlackBot.cs" />
     <Compile Include="WebhookParser.cs" />
     <Compile Include="WebhookQueueProcessor.cs" />
     <Compile Include="XmppBot.cs" />
@@ -122,7 +126,10 @@
     <None Include="PreDeploy.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Scripts\" />
+    <None Include="Configuration.xaml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

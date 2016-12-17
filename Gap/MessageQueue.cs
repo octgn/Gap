@@ -84,8 +84,9 @@ namespace Gap
                 if (item == null) return;
                 if (item.From.Equals(IrcConfig.BotName, StringComparison.InvariantCultureIgnoreCase)) return;
                 if (item.From.Equals(XmppConfig.Username, StringComparison.InvariantCultureIgnoreCase)) return;
+                if (item.From.Equals(SlackBot.Config.SlackBotName, StringComparison.InvariantCultureIgnoreCase)) return;
 
-                if (item.Dest == Destination.Xmpp)
+                if (item.Dest.HasFlag(Destination.Xmpp))
                 {
                     if (item.Message.StartsWith(":"))
                     {
@@ -147,22 +148,17 @@ namespace Gap
                     //m.XEvent = new Event { Delivered = true, Displayed = true };
                     Program.XmppBot.Con.Send(m);
                 }
-                else
+                if(item.Dest.HasFlag(Destination.IrcOctgn) || item.Dest.HasFlag(Destination.IrcOctgnDev) || item.Dest.HasFlag(Destination.IrcOctgnLobby))
                 {
                     var channel = "";
-                    switch (item.Dest)
-                    {
-                        case Destination.IrcOctgn:
-                            channel = "#octgn";
-                            break;
-                        case Destination.IrcOctgnLobby:
-                            channel = "#octgn-lobby";
-                            break;
-                        case Destination.IrcOctgnDev:
-                            channel = "#octgn-dev";
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(item.Dest.ToString());
+                    if( item.Dest.HasFlag( Destination.IrcOctgn ) ) {
+                        channel = "#octgn";
+                    } else if( item.Dest.HasFlag( Destination.IrcOctgnLobby ) ) {
+                        channel = "#octgn-lobby";
+                    } else if( item.Dest.HasFlag( Destination.IrcOctgnDev ) ) {
+                        channel = "#octgn-dev";
+                    } else {
+                        throw new ArgumentOutOfRangeException(item.Dest.ToString());
                     }
                     if (pauseXmpp && (item.From != "HELPZOR" || item.From != "PYZOR" || item.From != "ERRZOR"))
                         return;
@@ -177,21 +173,7 @@ namespace Gap
                                 System.Threading.Thread.Sleep(1000);
                         }
                     }
-                    if (item.Message.ToLower().Contains("test"))
-                    {
-                        if (item.From.StartsWith("Cpt. Hook") == false)
-                        {
-                            var form = string.Format(_getTestReplyMessage(), item.From);
-                            form = "Gap: " + form;
-                            var to = new Jid(XmppConfig.MucFullRoom);
-                            var j = new Jid(to.Bare);
-                            var m = new Message(j, MessageType.groupchat, form);
-                            m.GenerateId();
-                            Program.XmppBot.Con.Send(m);
-                            Program.IrcBot.IrcClient.Message(channel, form);
-                        }
-                    }
-                    else if (item.Message.Trim().ToLower().StartsWith("lmgtfy"))
+                    if (item.Message.Trim().ToLower().StartsWith("lmgtfy"))
                     {
                         const string furl = "http://www.google.com/search?q={0}&btnI";
                         var query = item.Message.Substring(6).Trim();
@@ -207,6 +189,15 @@ namespace Gap
                         Program.XmppBot.Con.Send(m);
                         Program.IrcBot.IrcClient.Message(channel, form);
                     }
+                }
+                if( item.Dest.HasFlag( Destination.SlackGeneral ) ) {
+                    Program.SlackBot.SendMessage( "general", item.From, item.Message );
+                }
+                if( item.Dest.HasFlag( Destination.SlackLobby ) ) {
+                    Program.SlackBot.SendMessage( "lobby", item.From, item.Message );
+                }
+                if( item.Dest.HasFlag( Destination.SlackDev ) ) {
+                    Program.SlackBot.SendMessage( "octgn-dev", item.From, item.Message );
                 }
             }
             finally
@@ -275,8 +266,9 @@ namespace Gap
         public Destination Dest { get; set; }
     }
 
+    [Flags]
     public enum Destination
     {
-        IrcOctgn, IrcOctgnLobby, IrcOctgnDev, Xmpp
+        IrcOctgn, IrcOctgnLobby, IrcOctgnDev, Xmpp, SlackGeneral, SlackDev, SlackLobby
     }
 }

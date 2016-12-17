@@ -1,0 +1,17 @@
+﻿<Configuration
+    xmlns="clr-namespace:Gap;assembly=Gap"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
+    <ChatClient Id="IrcChatClient">
+
+    </ChatClient>
+    <ChatClient Id="XmppChatClient">
+
+    </ChatClient>
+    <ChatClient Id="SlackChatClient">
+
+    </ChatClient>
+    <Configuration.MessageRoutes>
+        <MessageRoute From="{Binding Module=XmppChatClient}" To="{Binding Module=}"/>
+    </Configuration.MessageRoutes>
+</Configuration>
