@@ -1,17 +1,49 @@
 ﻿<Configuration
     xmlns="clr-namespace:Gap;assembly=Gap"
+    xmlns:mod="clr-namespace:Gap.Modules;assembly=Gap"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     >
-    <ChatClient Id="IrcChatClient">
-
+    <mod:IrcChatModule x:Key="IrcChatClient"
+                       Username="{x:Static AppConfig.IrcUsername}"
+                       Password="{x:Static AppConfig.IrcPassword}"
+                       EndPoint="{x:Static AppConfig.IrcEndpoint}">
+        <mod:IrcChatModule.Inputs>
+            <Input x:Key="IrcChannelOctgn"/>
+            <Input x:Key="IrcChannelOctgnLobby"/>
+            <Input x:Key="IrcChannelOctgnDev"/>
+        </mod:IrcChatModule.Inputs>
+        <mod:IrcChatModule.Outputs>
+            <Output x:Key="IrcChannelOctgn"/>
+            <Output x:Key="IrcChannelOctgnLobby"/>
+            <Output x:Key="IrcChannelOctgnDev"/>
+        </mod:IrcChatModule.Outputs>
+    </mod:IrcChatModule>
+    <!--<ChatClient x:Key="XmppChatClient">
+        <ChatClient.Inputs>
+            <Input x:Key="XmppLobby"/>
+        </ChatClient.Inputs>
+        <ChatClient.Outputs>
+            <Output x:Key="XmppLobby"/>
+        </ChatClient.Outputs>
     </ChatClient>
-    <ChatClient Id="XmppChatClient">
-
-    </ChatClient>
-    <ChatClient Id="SlackChatClient">
-
-    </ChatClient>
+    <ChatClient x:Key="SlackChatClient">
+        <ChatClient.Inputs>
+            <Input x:Key="SlackChannelOctgn"/>
+            <Input x:Key="SlackChannelOctgnLobby"/>
+            <Input x:Key="SlackChannelOctgnDev"/>
+        </ChatClient.Inputs>
+        <ChatClient.Outputs>
+            <Output x:Key="SlackChannelOctgn"/>
+            <Output x:Key="SlackChannelOctgnLobby"/>
+            <Output x:Key="SlackChannelOctgnDev"/>
+        </ChatClient.Outputs>
+    </ChatClient>-->
     <Configuration.MessageRoutes>
-        <MessageRoute From="{Binding Module=XmppChatClient}" To="{Binding Module=}"/>
+        <MessageRoute From="{Module IrcChatClient, Input=IrcChannelOctgn}"
+                      To="{Module SlackChatClient, Output=SlackChannelOctgn}">
+        </MessageRoute>
+        <MessageRoute From="{Module SlackChatClient, Input=SlackChannelOctgn}"
+                      To="{Module IrcChatClient, Output=IrcChannelOctgn}">
+        </MessageRoute>
     </Configuration.MessageRoutes>
 </Configuration>

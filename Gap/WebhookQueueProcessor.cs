@@ -53,13 +53,13 @@ namespace Gap
                     if (endmessage != "IGNORE") {
                         switch (message.Endpoint) {
                             case WebhookEndpoint.Octgn:
-                            MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgn));
+                            MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage/*, Destination.IrcOctgn*/));
                             break;
                             case WebhookEndpoint.OctgnDev:
-                            MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgnDev));
+                            MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage/*, Destination.IrcOctgnDev*/));
                             break;
                             case WebhookEndpoint.OctgnLobby:
-                            MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage, Destination.IrcOctgnLobby));
+                            MessageQueue.Get().Add(new MessageItem("Cpt. Hook", endmessage/*, Destination.IrcOctgnLobby*/));
                             break;
                             default:
                             throw new ArgumentOutOfRangeException(message.Endpoint.ToString());

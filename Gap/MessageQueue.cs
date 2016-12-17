@@ -75,136 +75,136 @@ namespace Gap
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            if (Timer.Enabled == false)
-                return;
-            Timer.Enabled = false;
-            try
-            {
-                var item = this.Next();
-                if (item == null) return;
-                if (item.From.Equals(IrcConfig.BotName, StringComparison.InvariantCultureIgnoreCase)) return;
-                if (item.From.Equals(XmppConfig.Username, StringComparison.InvariantCultureIgnoreCase)) return;
-                if (item.From.Equals(SlackBot.Config.SlackBotName, StringComparison.InvariantCultureIgnoreCase)) return;
+            //if (Timer.Enabled == false)
+            //    return;
+            //Timer.Enabled = false;
+            //try
+            //{
+            //    var item = this.Next();
+            //    if (item == null) return;
+            //    if (item.From.Equals(IrcConfig.BotName, StringComparison.InvariantCultureIgnoreCase)) return;
+            //    if (item.From.Equals(XmppConfig.Username, StringComparison.InvariantCultureIgnoreCase)) return;
+            //    if (item.From.Equals(SlackBot.Config.SlackBotName, StringComparison.InvariantCultureIgnoreCase)) return;
 
-                if (item.Dest.HasFlag(Destination.Xmpp))
-                {
-                    if (item.Message.StartsWith(":"))
-                    {
-                        if (item.From.Equals("kellyelton", StringComparison.InvariantCultureIgnoreCase) ||
-                            item.From.Equals("kellyelton_", StringComparison.InvariantCultureIgnoreCase)
-                             || item.From.Equals("brine", StringComparison.InvariantCultureIgnoreCase)
-                            || item.From.Equals("brinelog", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            if (item.Message.Equals(":stopirc", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                pauseIrc = true;
-                                return;
-                            }
-                            else if (item.Message.Equals(":startirc", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                pauseIrc = false;
-                                return;
-                            }
-                            else if (item.Message.Equals(":stopxmpp", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                pauseXmpp = true;
-                                return;
-                            }
-                            else if (item.Message.Equals(":startxmpp", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                pauseXmpp = false;
-                                return;
-                            }
-                            else if (item.Message.Equals(":kill", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                Task.Factory.StartNew(Program.Close);
-                                realEnd = true;
-                                Timer.Enabled = false;
-                                return;
-                            }
-                        }
-                        if (item.Message.Equals(":?"))
-                        {
-                            StringBuilder helpItems = new StringBuilder();
-                            helpItems.AppendLine("-- Commands --");
-                            helpItems.AppendLine("  :stopirc - Stop irc from sending messages to Xmpp");
-                            helpItems.AppendLine("  :startirc - Enable irc sending messages to Xmpp");
-                            helpItems.AppendLine("  :stopxmpp - Stop xmpp from sending messages to irc");
-                            helpItems.AppendLine("  :startxmpp - Enable xmpp sending messages to irc");
-                            helpItems.AppendLine("  :kill - Kills gap");
-                            Add(new MessageItem("HELPZOR", helpItems.ToString(), Destination.IrcOctgnLobby));
-                            return;
-                        }
-                        Add(new MessageItem("ERRZOR", "Unknown Command: " + item.Message, Destination.IrcOctgnLobby));
-                    }
-                    if (pauseIrc)
-                    {
-                        return;
-                    }
-                    var to = new Jid(XmppConfig.MucFullRoom);
-                    var j = new Jid(to.Bare);
-                    var m = new Message(j, MessageType.groupchat, item.From + ": " + item.Message);
-                    m.GenerateId();
-                    //m.XEvent = new Event { Delivered = true, Displayed = true };
-                    Program.XmppBot.Con.Send(m);
-                }
-                if(item.Dest.HasFlag(Destination.IrcOctgn) || item.Dest.HasFlag(Destination.IrcOctgnDev) || item.Dest.HasFlag(Destination.IrcOctgnLobby))
-                {
-                    var channel = "";
-                    if( item.Dest.HasFlag( Destination.IrcOctgn ) ) {
-                        channel = "#octgn";
-                    } else if( item.Dest.HasFlag( Destination.IrcOctgnLobby ) ) {
-                        channel = "#octgn-lobby";
-                    } else if( item.Dest.HasFlag( Destination.IrcOctgnDev ) ) {
-                        channel = "#octgn-dev";
-                    } else {
-                        throw new ArgumentOutOfRangeException(item.Dest.ToString());
-                    }
-                    if (pauseXmpp && (item.From != "HELPZOR" || item.From != "PYZOR" || item.From != "ERRZOR"))
-                        return;
-                    using (var sr = new StringReader(item.Message))
-                    {
-                        var line = sr.ReadLine();
-                        while (line != null)
-                        {
-                            Program.IrcBot.IrcClient.Message(channel, item.From + ": " + line);
-                            line = sr.ReadLine();
-                            if (line != null)
-                                System.Threading.Thread.Sleep(1000);
-                        }
-                    }
-                    if (item.Message.Trim().ToLower().StartsWith("lmgtfy"))
-                    {
-                        const string furl = "http://www.google.com/search?q={0}&btnI";
-                        var query = item.Message.Substring(6).Trim();
-                        var cq = System.Uri.EscapeUriString(query);
-                        var u = string.Format(furl, cq);
+            //    if (item.Dest.HasFlag(Destination.Xmpp))
+            //    {
+            //        if (item.Message.StartsWith(":"))
+            //        {
+            //            if (item.From.Equals("kellyelton", StringComparison.InvariantCultureIgnoreCase) ||
+            //                item.From.Equals("kellyelton_", StringComparison.InvariantCultureIgnoreCase)
+            //                 || item.From.Equals("brine", StringComparison.InvariantCultureIgnoreCase)
+            //                || item.From.Equals("brinelog", StringComparison.InvariantCultureIgnoreCase))
+            //            {
+            //                if (item.Message.Equals(":stopirc", StringComparison.InvariantCultureIgnoreCase))
+            //                {
+            //                    pauseIrc = true;
+            //                    return;
+            //                }
+            //                else if (item.Message.Equals(":startirc", StringComparison.InvariantCultureIgnoreCase))
+            //                {
+            //                    pauseIrc = false;
+            //                    return;
+            //                }
+            //                else if (item.Message.Equals(":stopxmpp", StringComparison.InvariantCultureIgnoreCase))
+            //                {
+            //                    pauseXmpp = true;
+            //                    return;
+            //                }
+            //                else if (item.Message.Equals(":startxmpp", StringComparison.InvariantCultureIgnoreCase))
+            //                {
+            //                    pauseXmpp = false;
+            //                    return;
+            //                }
+            //                else if (item.Message.Equals(":kill", StringComparison.InvariantCultureIgnoreCase))
+            //                {
+            //                    Task.Factory.StartNew(Program.Close);
+            //                    realEnd = true;
+            //                    Timer.Enabled = false;
+            //                    return;
+            //                }
+            //            }
+            //            if (item.Message.Equals(":?"))
+            //            {
+            //                StringBuilder helpItems = new StringBuilder();
+            //                helpItems.AppendLine("-- Commands --");
+            //                helpItems.AppendLine("  :stopirc - Stop irc from sending messages to Xmpp");
+            //                helpItems.AppendLine("  :startirc - Enable irc sending messages to Xmpp");
+            //                helpItems.AppendLine("  :stopxmpp - Stop xmpp from sending messages to irc");
+            //                helpItems.AppendLine("  :startxmpp - Enable xmpp sending messages to irc");
+            //                helpItems.AppendLine("  :kill - Kills gap");
+            //                Add(new MessageItem("HELPZOR", helpItems.ToString(), Destination.IrcOctgnLobby));
+            //                return;
+            //            }
+            //            Add(new MessageItem("ERRZOR", "Unknown Command: " + item.Message, Destination.IrcOctgnLobby));
+            //        }
+            //        if (pauseIrc)
+            //        {
+            //            return;
+            //        }
+            //        var to = new Jid(XmppConfig.MucFullRoom);
+            //        var j = new Jid(to.Bare);
+            //        var m = new Message(j, MessageType.groupchat, item.From + ": " + item.Message);
+            //        m.GenerateId();
+            //        //m.XEvent = new Event { Delivered = true, Displayed = true };
+            //        Program.XmppBot.Con.Send(m);
+            //    }
+                //if(item.Dest.HasFlag(Destination.IrcOctgn) || item.Dest.HasFlag(Destination.IrcOctgnDev) || item.Dest.HasFlag(Destination.IrcOctgnLobby))
+                //{
+                //    var channel = "";
+                //    if( item.Dest.HasFlag( Destination.IrcOctgn ) ) {
+                //        channel = "#octgn";
+                //    } else if( item.Dest.HasFlag( Destination.IrcOctgnLobby ) ) {
+                //        channel = "#octgn-lobby";
+                //    } else if( item.Dest.HasFlag( Destination.IrcOctgnDev ) ) {
+                //        channel = "#octgn-dev";
+                //    } else {
+                //        throw new ArgumentOutOfRangeException(item.Dest.ToString());
+                //    }
+                //    if (pauseXmpp && (item.From != "HELPZOR" || item.From != "PYZOR" || item.From != "ERRZOR"))
+                //        return;
+                //    using (var sr = new StringReader(item.Message))
+                //    {
+                //        var line = sr.ReadLine();
+                //        while (line != null)
+                //        {
+                //            Program.IrcBot.IrcClient.Message(channel, item.From + ": " + line);
+                //            line = sr.ReadLine();
+                //            if (line != null)
+                //                System.Threading.Thread.Sleep(1000);
+                //        }
+                //    }
+                //    if (item.Message.Trim().ToLower().StartsWith("lmgtfy"))
+                //    {
+                //        const string furl = "http://www.google.com/search?q={0}&btnI";
+                //        var query = item.Message.Substring(6).Trim();
+                //        var cq = System.Uri.EscapeUriString(query);
+                //        var u = string.Format(furl, cq);
 
-                        var form = string.Format("Here ya go -> {0}", u);
-                        form = "Gap: " + form;
-                        var to = new Jid(XmppConfig.MucFullRoom);
-                        var j = new Jid(to.Bare);
-                        var m = new Message(j, MessageType.groupchat, form);
-                        m.GenerateId();
-                        Program.XmppBot.Con.Send(m);
-                        Program.IrcBot.IrcClient.Message(channel, form);
-                    }
-                }
-                if( item.Dest.HasFlag( Destination.SlackGeneral ) ) {
-                    Program.SlackBot.SendMessage( "general", item.From, item.Message );
-                }
-                if( item.Dest.HasFlag( Destination.SlackLobby ) ) {
-                    Program.SlackBot.SendMessage( "lobby", item.From, item.Message );
-                }
-                if( item.Dest.HasFlag( Destination.SlackDev ) ) {
-                    Program.SlackBot.SendMessage( "octgn-dev", item.From, item.Message );
-                }
-            }
-            finally
-            {
-                if (!realEnd)
-                    Timer.Enabled = true;
-            }
+                //        var form = string.Format("Here ya go -> {0}", u);
+                //        form = "Gap: " + form;
+                //        var to = new Jid(XmppConfig.MucFullRoom);
+                //        var j = new Jid(to.Bare);
+                //        var m = new Message(j, MessageType.groupchat, form);
+                //        m.GenerateId();
+                //        Program.XmppBot.Con.Send(m);
+                //        Program.IrcBot.IrcClient.Message(channel, form);
+                //    }
+                //}
+                //if( item.Dest.HasFlag( Destination.SlackGeneral ) ) {
+                //    Program.SlackBot.SendMessage( "general", item.From, item.Message );
+                //}
+                //if( item.Dest.HasFlag( Destination.SlackLobby ) ) {
+                //    Program.SlackBot.SendMessage( "lobby", item.From, item.Message );
+                //}
+                //if( item.Dest.HasFlag( Destination.SlackDev ) ) {
+                //    Program.SlackBot.SendMessage( "octgn-dev", item.From, item.Message );
+                //}
+            //}
+            //finally
+            //{
+            //    if (!realEnd)
+            //        Timer.Enabled = true;
+            //}
         }
 
         private string[] lastList = { "TEST SUCCESSFULL {0}" };
@@ -255,20 +255,12 @@ namespace Gap
 
     public class MessageItem
     {
-        public MessageItem(string from, string message, Destination dest)
+        public MessageItem(string from, string message)
         {
             From = from;
             Message = message;
-            Dest = dest;
         }
         public string From { get; set; }
         public string Message { get; set; }
-        public Destination Dest { get; set; }
-    }
-
-    [Flags]
-    public enum Destination
-    {
-        IrcOctgn, IrcOctgnLobby, IrcOctgnDev, Xmpp, SlackGeneral, SlackDev, SlackLobby
     }
 }

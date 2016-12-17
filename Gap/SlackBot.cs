@@ -49,7 +49,7 @@ namespace Gap
 
             Log.Info( $"#{obj.channel} {obj.user}: {obj.text}" );
             if( obj.text.StartsWith( "@" ) ) return;
-            MessageQueue.Get().Add( new MessageItem( obj.user, obj.text, Destination.Xmpp | Destination.IrcOctgnLobby ) );
+            MessageQueue.Get().Add( new MessageItem( obj.user, obj.text ) );
         }
 
         private void Client_OnConnected( LoginResponse obj ) {

@@ -39,7 +39,7 @@
             IrcClient.GotNameChange += IrcClientOnGotNameChange;
             IrcClient.GotNameListEnd += IrcClientOnGotNameListEnd;
             IrcClient.GotNameListReply += IrcClientOnGotNameListReply;
-            IrcClient.GotNotice += IrcClientOnGotNotice;
+            //IrcClient.GotNotice += IrcClientOnGotNotice;
             IrcClient.GotPingReply += IrcClientOnGotPingReply;
             IrcClient.GotUserKicked += IrcClientOnGotUserKicked;
             IrcClient.GotUserQuit += IrcClientOnGotUserQuit;
@@ -79,11 +79,6 @@
         private void IrcClientOnGotPingReply(object sender, PingReplyEventArgs pingReplyEventArgs)
         {
             Log.Info(MethodBase.GetCurrentMethod().Name);
-        }
-
-        private void IrcClientOnGotNotice(object sender, ChatMessageEventArgs chatMessageEventArgs)
-        {
-            Log.InfoFormat("Notice::{0}", chatMessageEventArgs.Message.ToString());
         }
 
         private void IrcClientOnGotNameListReply(object sender, NameListReplyEventArgs nameListReplyEventArgs)
@@ -126,7 +121,7 @@
             Log.Info(args.Sender.Username.ToString() + ":" + args.Message.ToString());
             if (args.Message.StartsWith("@")) return;
             if (args.Recipient.StartsWith("#") && args.Recipient.Equals("#octgn-lobby") == false) return;
-            MessageQueue.Get().Add(new MessageItem(args.Sender.Nickname, args.Message, Destination.Xmpp | Destination.SlackLobby));
+            MessageQueue.Get().Add(new MessageItem(args.Sender.Nickname, args.Message));
         }
 
         private void IrcClientOnGotLeaveChannel(object sender, JoinLeaveEventArgs joinLeaveEventArgs)
