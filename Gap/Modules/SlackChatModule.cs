@@ -56,10 +56,6 @@ namespace Gap.Modules
         }
 
         private void SendMessageToChannel( string channelId, MessageItem message ) {
-            while( _client.Channels == null ) {
-                RefreshChannelsTimer_Elapsed( null, null );
-            }
-
             _client.PostMessage( x => { }, channelId, message.Message, botName: message.From );
         }
 
@@ -87,6 +83,7 @@ namespace Gap.Modules
 
         private void Client_OnConnected( LoginResponse obj ) {
             Log.Info( nameof( SlackChatModule ) + " Connected" );
+            RefreshChannelsTimer_Elapsed( null, null );
         }
 
         private void RefreshChannelsTimer_Elapsed( object sender, ElapsedEventArgs e ) {
