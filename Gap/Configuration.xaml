@@ -59,9 +59,9 @@
         <MessageRoute From="{Module SlackChatModule, Input=SlackChannelGeneral}"
                       To="{Module IrcChatModule, Output=IrcChannelOctgn}">
         </MessageRoute>
-        <MessageRoute From="{Module SlackChatModule, Input=SlackChannelOctgnDev}"
+        <!--<MessageRoute From="{Module SlackChatModule, Input=SlackChannelOctgnDev}"
                       To="{Module IrcChatModule, Output=IrcChannelOctgnDev}">
-        </MessageRoute>
+        </MessageRoute>-->
         <MessageRoute From="{Module SlackChatModule, Input=SlackChannelOctgnLobby}"
                       To="{Module XmppChatModule, Output=XmppLobby}">
         </MessageRoute>
