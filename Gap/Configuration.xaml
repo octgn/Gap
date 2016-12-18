@@ -59,5 +59,11 @@
         <MessageRoute From="{Module SlackChatModule, Input=SlackChannelGeneral}"
                       To="{Module IrcChatModule, Output=IrcChannelOctgn}">
         </MessageRoute>
+        <MessageRoute From="{Module IrcChatModule, Input=IrcChannelOctgnDev}"
+                      To="{Module SlackChatModule, Output=SlackChannelOctgnDev}">
+        </MessageRoute>
+        <MessageRoute From="{Module SlackChatModule, Input=SlackChannelOctgnDev}"
+                      To="{Module IrcChatModule, Output=IrcChannelOctgnDev}">
+        </MessageRoute>
     </Configuration.MessageRoutes>
 </Configuration>

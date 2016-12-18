@@ -23,6 +23,8 @@ namespace Gap.Modules
             _timer = new System.Timers.Timer( 60000 * 10 );
 
             Outputs["SlackChannelGeneral"].OnMessage += ChannelGeneral_OnMessage;
+            Outputs["SlackChannelOctgnLobby"].OnMessage += ChannelOctgnLobby_OnMessage;
+            Outputs["SlackChannelOctgnDev"].OnMessage += ChannelOctgnDev_OnMessage;
         }
 
         public void Start() {
@@ -39,23 +41,47 @@ namespace Gap.Modules
 
         private void ChannelGeneral_OnMessage( object sender, MessageEventArgs e ) {
             var item = (MessageItem)e.Message;
-            SendMessageToChannel( "general", item );
+            var cid = _client.Channels.First( x => x.name == "general" ).id;
+            SendMessageToChannel( cid, item );
+        }
+        private void ChannelOctgnLobby_OnMessage( object sender, MessageEventArgs e ) {
+            var item = (MessageItem)e.Message;
+            var cid = _client.Channels.First( x => x.name == "lobby" ).id;
+            SendMessageToChannel( cid, item );
+        }
+        private void ChannelOctgnDev_OnMessage( object sender, MessageEventArgs e ) {
+            var item = (MessageItem)e.Message;
+            var cid = _client.Groups.First( x => x.name == "octgn-dev" ).id;
+            SendMessageToChannel( cid, item );
         }
 
-        private void SendMessageToChannel( string channel, MessageItem message ) {
+        private void SendMessageToChannel( string channelId, MessageItem message ) {
             while( _client.Channels == null ) {
                 RefreshChannelsTimer_Elapsed( null, null );
             }
-            var c = _client.Channels.Find( x => x.name.Equals( channel ) );
-            if( c == null ) return;
 
-            _client.PostMessage( x => { }, c.id, message.Message, botName: message.From );
+            _client.PostMessage( x => { }, channelId, message.Message, botName: message.From );
         }
 
         private void Client_OnMessageReceived( SlackAPI.WebSocketMessages.NewMessage obj ) {
-            Log.Info( $"#{obj.channel} {obj.user}: {obj.text}" );
-            if(obj.channel == "general" ) {
-                Inputs["SlackChannelGeneral"].Push( this, new MessageItem( obj.user, obj.text ) );
+            // Ignore bot messages
+            if( obj.subtype == "bot_message" ) return;
+
+            User from = _client.UserLookup[obj.user];
+            string channelName = "";
+            if( _client.ChannelLookup.ContainsKey( obj.channel ) ) {
+                channelName = _client.ChannelLookup[obj.channel].name;
+            } else if( _client.GroupLookup.ContainsKey( obj.channel ) ) {
+                channelName = _client.GroupLookup[obj.channel].name;
+            }
+
+            Log.Info( $"#{channelName} {from.name}: {obj.text}" );
+            if(channelName == "general" ) {
+                Inputs["SlackChannelGeneral"].Push( this, new MessageItem( from.name, obj.text ) );
+            } else if(channelName == "lobby" ) {
+                Inputs["SlackChannelOctgnLobby"].Push( this, new MessageItem( from.name, obj.text ) );
+            } else if(channelName == "octgn-dev" ) {
+                Inputs["SlackChannelOctgnDev"].Push( this, new MessageItem( from.name, obj.text ) );
             }
         }
 

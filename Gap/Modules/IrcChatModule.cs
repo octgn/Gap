@@ -31,11 +31,21 @@ namespace Gap.Modules
         public override void Configure() {
             base.Configure();
             Outputs["IrcChannelOctgn"].OnMessage += ChannelOctgn_OnMessage;
+            Outputs["IrcChannelOctgnLobby"].OnMessage += ChannelOctgnLobby_OnMessage;
+            Outputs["IrcChannelOctgnDev"].OnMessage += ChannelOctgnDev_OnMessage;
         }
 
         private void ChannelOctgn_OnMessage( object sender, MessageEventArgs e ) {
             var item = (MessageItem)e.Message;
             SendMessageToChannel( "#octgn", item );
+        }
+        private void ChannelOctgnLobby_OnMessage( object sender, MessageEventArgs e ) {
+            var item = (MessageItem)e.Message;
+            SendMessageToChannel( "#octgn-lobby", item );
+        }
+        private void ChannelOctgnDev_OnMessage( object sender, MessageEventArgs e ) {
+            var item = (MessageItem)e.Message;
+            SendMessageToChannel( "#octgn-dev", item );
         }
 
         private void SendMessageToChannel( string channel, MessageItem item ) {
@@ -75,6 +85,10 @@ namespace Gap.Modules
             Log.Info( args.Sender.Username.ToString() + ":" + args.Message.ToString() );
             if( args.Recipient.Equals( "#octgn" ) ) {
                 Inputs["IrcChannelOctgn"].Push( this, new MessageItem( args.Sender.Nickname, args.Message ) );
+            } else if( args.Recipient.Equals( "#octgn-lobby" ) ) {
+                Inputs["IrcChannelOctgnLobby"].Push( this, new MessageItem( args.Sender.Nickname, args.Message ) );
+            } else if( args.Recipient.Equals( "#octgn-dev" ) ) {
+                Inputs["IrcChannelOctgnDev"].Push( this, new MessageItem( args.Sender.Nickname, args.Message ) );
             }
         }
 
