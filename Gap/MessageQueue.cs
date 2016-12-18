@@ -141,12 +141,6 @@ namespace Gap
             //        {
             //            return;
             //        }
-            //        var to = new Jid(XmppConfig.MucFullRoom);
-            //        var j = new Jid(to.Bare);
-            //        var m = new Message(j, MessageType.groupchat, item.From + ": " + item.Message);
-            //        m.GenerateId();
-            //        //m.XEvent = new Event { Delivered = true, Displayed = true };
-            //        Program.XmppBot.Con.Send(m);
             //    }
                 //if(item.Dest.HasFlag(Destination.IrcOctgn) || item.Dest.HasFlag(Destination.IrcOctgnDev) || item.Dest.HasFlag(Destination.IrcOctgnLobby))
                 //{

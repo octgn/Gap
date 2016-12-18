@@ -6,12 +6,10 @@ using System.Configuration;
 
 namespace Gap
 {
-
     public class Program
     {
         internal static ILog Log = LogManager.GetLogger( MethodBase.GetCurrentMethod().DeclaringType );
 
-        public static XmppBot XmppBot { get; set; }
         public static WebhookQueueProcessor WebhookQueueProcessor { get; set; }
 
         public static string Taco = "asdf";
@@ -21,15 +19,6 @@ namespace Gap
         }
 
         static void Run() {
-            //SlackBot = new SlackBot();
-            //SlackBot.Start();
-            //await TenSeconds();
-            //IrcBot = new IrcBot();
-            //IrcBot.Start();
-            //await TenSeconds();
-            //XmppBot = new XmppBot( IrcBot );
-            //XmppBot.Start();
-            //await TenSeconds();
             //WebhookQueueProcessor = new WebhookQueueProcessor();
             //WebhookQueueProcessor.Start();
 
@@ -58,7 +47,6 @@ namespace Gap
             try {
                 WebhookQueueProcessor.Dispose();
                 MessageQueue.Get().Stop();
-                XmppBot.Stop();
             } catch( Exception e ) {
                 Log.Error( "Close", e );
             }
@@ -74,5 +62,10 @@ namespace Gap
 
         public static string SlackBotName { get; } = ConfigurationManager.AppSettings[nameof( SlackBotName )];
         public static string SlackAuthToken { get; } = ConfigurationManager.AppSettings[nameof( SlackAuthToken )];
+
+        public static string XmppUsername { get; } = ConfigurationManager.AppSettings[nameof( XmppUsername )];
+        public static string XmppPassword { get; } = ConfigurationManager.AppSettings[nameof( XmppPassword )];
+        public static string XmppResource { get; } = ConfigurationManager.AppSettings[nameof( XmppResource )];
+        public static string XmppServer { get; } = ConfigurationManager.AppSettings[nameof( XmppServer )];
     }
 }

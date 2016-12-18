@@ -103,11 +103,11 @@
     <Compile Include="MessageQueue.cs" />
     <Compile Include="Modules\IrcChatModule.cs" />
     <Compile Include="Modules\SlackChatModule.cs" />
+    <Compile Include="Modules\XmppChatModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebhookParser.cs" />
     <Compile Include="WebhookQueueProcessor.cs" />
-    <Compile Include="XmppBot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
