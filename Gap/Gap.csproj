@@ -108,7 +108,6 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="Filters\Filter.cs" />
-    <Compile Include="IrcBot.cs" />
     <Compile Include="MessageQueue.cs" />
     <Compile Include="Modules\IrcChatModule.cs" />
     <Compile Include="Program.cs" />

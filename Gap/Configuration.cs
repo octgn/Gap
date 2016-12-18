@@ -9,7 +9,7 @@ using System.Xaml;
 namespace Gap
 {
     [ContentProperty( nameof( Modules ) )]
-    public class Configuration : Module
+    public class Configuration : Module, IRunnableModule
     {
         public Dictionary<string, Module> Modules { get; set; } = new Dictionary<string, Module>();
         public List<MessageRoute> MessageRoutes { get; set; } = new List<MessageRoute>();
@@ -20,6 +20,40 @@ namespace Gap
             using( FileStream fileStream = File.OpenRead( path ) ) {
                 var yourObj = (Configuration)System.Windows.Markup.XamlReader.Load( fileStream );
                 return yourObj;
+            }
+        }
+
+        public void Start() {
+            foreach( KeyValuePair<string, Module> mod in Modules.Where( x => x.Value is IRunnableModule ) ) {
+                (mod.Value as IRunnableModule).Start();
+            }
+        }
+
+        public void Stop() {
+            foreach( KeyValuePair<string, Module> mod in Modules.Where( x => x.Value is IRunnableModule ) ) {
+                (mod.Value as IRunnableModule).Stop();
+            }
+        }
+
+        public override void Configure() {
+            base.Configure();
+            foreach( KeyValuePair<string, Module> mod in Modules ) {
+                mod.Value.Configure();
+            }
+            foreach( MessageRoute route in MessageRoutes ) {
+                route.Configure();
+            }
+        }
+
+        protected override void Dispose( bool disposing ) {
+            base.Dispose( disposing );
+            if( !disposing ) return;
+
+            Stop();
+
+            foreach( KeyValuePair<string, Module> mod in Modules.ToArray() ) {
+                mod.Value.Dispose();
+                Modules.Remove( mod.Key );
             }
         }
     }
@@ -94,11 +128,10 @@ namespace Gap
         public Module Origin { get; set; }
         public object Message { get; set; }
 
-        public MessageEventArgs(Module origin, object message ) {
+        public MessageEventArgs( Module origin, object message ) {
             Origin = origin;
             Message = message;
         }
-
     }
 
     public class Output
@@ -148,7 +181,7 @@ namespace Gap
 
         public override object ProvideValue( IServiceProvider serviceProvider ) {
             if( string.IsNullOrWhiteSpace( Module ) )
-                throw new ArgumentNullException(nameof(Module), "Module must be set" );
+                throw new ArgumentNullException( nameof( Module ), "Module must be set" );
             if( !String.IsNullOrWhiteSpace( Input ) && !String.IsNullOrWhiteSpace( Output ) )
                 throw new InvalidOperationException( "Can not set both Input and Output" );
 

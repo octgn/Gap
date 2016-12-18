@@ -40,10 +40,10 @@
     </ChatClient>-->
     <Configuration.MessageRoutes>
         <MessageRoute From="{Module IrcChatClient, Input=IrcChannelOctgn}"
-                      To="{Module SlackChatClient, Output=SlackChannelOctgn}">
-        </MessageRoute>
-        <MessageRoute From="{Module SlackChatClient, Input=SlackChannelOctgn}"
                       To="{Module IrcChatClient, Output=IrcChannelOctgn}">
         </MessageRoute>
+        <!--<MessageRoute From="{Module SlackChatClient, Input=SlackChannelOctgn}"
+                      To="{Module IrcChatClient, Output=IrcChannelOctgn}">
+        </MessageRoute>-->
     </Configuration.MessageRoutes>
 </Configuration>

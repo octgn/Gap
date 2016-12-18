@@ -17,12 +17,10 @@ namespace Gap
     public class XmppBot
     {
         internal static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        public IrcBot IrcBot { get; set; }
         public XmppClientConnection Con { get; set; }
         public MucManager Muc { get; set; }
-        public XmppBot(IrcBot ircBot)
+        public XmppBot()
         {
-            IrcBot = ircBot;
         }
 
         public void Start()

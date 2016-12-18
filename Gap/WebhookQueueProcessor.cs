@@ -66,9 +66,9 @@ namespace Gap
                         }
                     }
 
-                    if (Program.IrcBot.IrcClient.IsConnected && parsed) {
-                        bmess.Complete();
-                    }
+                    //if (Program.IrcBot.IrcClient.IsConnected && parsed) {
+                    //    bmess.Complete();
+                    //}
                 }
             } catch (Exception e) {
                 Log.Error("ProcessHooksTimerOnElapsed", e);
