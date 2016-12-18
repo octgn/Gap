@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using log4net;
 using System.Configuration;
 
@@ -13,7 +12,6 @@ namespace Gap
         internal static ILog Log = LogManager.GetLogger( MethodBase.GetCurrentMethod().DeclaringType );
 
         public static XmppBot XmppBot { get; set; }
-        public static SlackBot SlackBot { get; set; }
         public static WebhookQueueProcessor WebhookQueueProcessor { get; set; }
 
         public static string Taco = "asdf";
@@ -61,7 +59,6 @@ namespace Gap
                 WebhookQueueProcessor.Dispose();
                 MessageQueue.Get().Stop();
                 XmppBot.Stop();
-                SlackBot.Stop();
             } catch( Exception e ) {
                 Log.Error( "Close", e );
             }
@@ -71,8 +68,11 @@ namespace Gap
 
     public class AppConfig
     {
-        public static string IrcUsername { get; } = ConfigurationManager.AppSettings["IrcUsername"];
-        public static string IrcPassword { get; } = ConfigurationManager.AppSettings["IrcPassword"];
-        public static string IrcEndpoint { get; } = ConfigurationManager.AppSettings["IrcEndpoint"];
+        public static string IrcUsername { get; } = ConfigurationManager.AppSettings[nameof( IrcUsername )];
+        public static string IrcPassword { get; } = ConfigurationManager.AppSettings[nameof( IrcPassword )];
+        public static string IrcEndpoint { get; } = ConfigurationManager.AppSettings[nameof( IrcEndpoint )];
+
+        public static string SlackBotName { get; } = ConfigurationManager.AppSettings[nameof( SlackBotName )];
+        public static string SlackAuthToken { get; } = ConfigurationManager.AppSettings[nameof( SlackAuthToken )];
     }
 }

@@ -73,7 +73,6 @@ namespace Gap.Modules
 
         private void IrcClientOnGotMessage( object sender, ChatMessageEventArgs args ) {
             Log.Info( args.Sender.Username.ToString() + ":" + args.Message.ToString() );
-            if( args.Message.StartsWith( "@" ) ) return;
             if( args.Recipient.Equals( "#octgn" ) ) {
                 Inputs["IrcChannelOctgn"].Push( this, new MessageItem( args.Sender.Nickname, args.Message ) );
             }

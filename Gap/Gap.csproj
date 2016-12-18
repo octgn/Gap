@@ -106,9 +106,9 @@
     <Compile Include="Filters\Filter.cs" />
     <Compile Include="MessageQueue.cs" />
     <Compile Include="Modules\IrcChatModule.cs" />
+    <Compile Include="Modules\SlackChatModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SlackBot.cs" />
     <Compile Include="WebhookParser.cs" />
     <Compile Include="WebhookQueueProcessor.cs" />
     <Compile Include="XmppBot.cs" />

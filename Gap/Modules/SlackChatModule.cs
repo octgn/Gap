@@ -1,25 +1,28 @@
-﻿using System;
-using log4net;
-using SlackAPI;
-using System.Reflection;
-using System.Configuration;
-using System.Timers;
+﻿using SlackAPI;
+using System;
 using System.Linq;
 using System.Threading;
+using System.Timers;
 
-namespace Gap
+namespace Gap.Modules
 {
-    public class SlackBot
+    public class SlackChatModule : Module, IRunnableModule
     {
-        internal static ILog Log = LogManager.GetLogger( MethodBase.GetCurrentMethod().DeclaringType );
+        private static log4net.ILog Log = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
 
-        private readonly SlackSocketClient _client;
-        private readonly System.Timers.Timer _timer;
+        public string BotName { get; set; }
+        public string AuthToken { get; set; }
 
-        public SlackBot() {
-            _client = new SlackSocketClient( Config.SlackAuthToken );
+        private SlackSocketClient _client;
+        private System.Timers.Timer _timer;
+
+        public override void Configure() {
+            base.Configure();
+            _client = new SlackSocketClient( AuthToken );
             _client.OnMessageReceived += Client_OnMessageReceived;
             _timer = new System.Timers.Timer( 60000 * 10 );
+
+            Outputs["SlackChannelGeneral"].OnMessage += ChannelGeneral_OnMessage;
         }
 
         public void Start() {
@@ -34,26 +37,30 @@ namespace Gap
             _client.CloseSocket();
         }
 
-        public void SendMessage( string channel, string from, string message ) {
-            while (_client.Channels == null ) {
+        private void ChannelGeneral_OnMessage( object sender, MessageEventArgs e ) {
+            var item = (MessageItem)e.Message;
+            SendMessageToChannel( "general", item );
+        }
+
+        private void SendMessageToChannel( string channel, MessageItem message ) {
+            while( _client.Channels == null ) {
                 RefreshChannelsTimer_Elapsed( null, null );
             }
             var c = _client.Channels.Find( x => x.name.Equals( channel ) );
             if( c == null ) return;
 
-            _client.PostMessage( x => { }, c.id, message, botName: from );
+            _client.PostMessage( x => { }, c.id, message.Message, botName: message.From );
         }
 
         private void Client_OnMessageReceived( SlackAPI.WebSocketMessages.NewMessage obj ) {
-            if( obj.channel != "lobby" ) return; // Only process these right now.
-
             Log.Info( $"#{obj.channel} {obj.user}: {obj.text}" );
-            if( obj.text.StartsWith( "@" ) ) return;
-            MessageQueue.Get().Add( new MessageItem( obj.user, obj.text ) );
+            if(obj.channel == "general" ) {
+                Inputs["SlackChannelGeneral"].Push( this, new MessageItem( obj.user, obj.text ) );
+            }
         }
 
         private void Client_OnConnected( LoginResponse obj ) {
-            Log.Info( nameof( SlackBot ) + " Connected" );
+            Log.Info( nameof( SlackChatModule ) + " Connected" );
         }
 
         private void RefreshChannelsTimer_Elapsed( object sender, ElapsedEventArgs e ) {
@@ -75,12 +82,15 @@ namespace Gap
             }
         }
 
-        public static class Config
-        {
-            public static string SlackBotName =>
-                ConfigurationManager.AppSettings[nameof( SlackBotName )];
-            public static string SlackAuthToken =>
-                ConfigurationManager.AppSettings[nameof( SlackAuthToken )];
+        protected override void Dispose( bool disposing ) {
+            base.Dispose( disposing );
+            if( !disposing ) return;
+
+            if( _client != null ) {
+                _client.OnMessageReceived -= Client_OnMessageReceived;
+            }
+
+            Stop();
         }
     }
 }
