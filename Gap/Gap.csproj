@@ -79,10 +79,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SlackAPI, Version=1.0.4.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SlackAPI.1.0.5.1\lib\net45\SlackAPI.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -133,6 +129,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Chat\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SlackAPI\SlackAPI.csproj">
+      <Project>{0c0a58a8-174e-4a4c-907b-c3569144d15d}</Project>
+      <Name>SlackAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
