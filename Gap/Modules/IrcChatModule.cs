@@ -121,6 +121,10 @@ namespace Gap.Modules
             base.Dispose( disposing );
             if( !disposing ) return;
 
+            Outputs["IrcChannelOctgn"].OnMessage -= ChannelOctgn_OnMessage;
+            Outputs["IrcChannelOctgnLobby"].OnMessage -= ChannelOctgnLobby_OnMessage;
+            Outputs["IrcChannelOctgnDev"].OnMessage -= ChannelOctgnDev_OnMessage;
+
             _client.GotWelcomeMessage -= IrcClientOnGotWelcomeMessage;
             _client.GotNotice -= IrcClientOnGotNotice;
             _client.GotMessage -= IrcClientOnGotMessage;

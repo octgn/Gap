@@ -98,16 +98,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppConfig.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Filters\Filter.cs" />
-    <Compile Include="MessageQueue.cs" />
+    <Compile Include="MessageItem.cs" />
     <Compile Include="Modules\IrcChatModule.cs" />
     <Compile Include="Modules\SlackChatModule.cs" />
+    <Compile Include="Modules\WebhookModule.cs" />
     <Compile Include="Modules\XmppChatModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebhookParser.cs" />
-    <Compile Include="WebhookQueueProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

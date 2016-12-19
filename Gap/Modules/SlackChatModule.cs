@@ -109,6 +109,10 @@ namespace Gap.Modules
             base.Dispose( disposing );
             if( !disposing ) return;
 
+            Outputs["SlackChannelGeneral"].OnMessage -= ChannelGeneral_OnMessage;
+            Outputs["SlackChannelOctgnLobby"].OnMessage -= ChannelOctgnLobby_OnMessage;
+            Outputs["SlackChannelOctgnDev"].OnMessage -= ChannelOctgnDev_OnMessage;
+
             if( _client != null ) {
                 _client.OnMessageReceived -= Client_OnMessageReceived;
             }

@@ -113,6 +113,8 @@ namespace Gap.Modules
             base.Dispose( disposing );
             if( !disposing ) return;
 
+            Outputs["XmppLobby"].OnMessage -= XmppChatModule_OnMessage;
+
             if( _client != null ) {
                 _client.OnXmppConnectionStateChanged -= this.XmppOnXmppConnectionStateChanged;
                 _client.OnLogin -= this.XmppOnLogin;
