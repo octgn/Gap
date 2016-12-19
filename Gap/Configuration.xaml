@@ -1,0 +1,97 @@
+﻿<Configuration
+    xmlns="clr-namespace:Gap;assembly=Gap"
+    xmlns:mod="clr-namespace:Gap.Modules;assembly=Gap"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
+    <mod:IrcChatModule x:Key="IrcChatModule"
+                       Username="{x:Static AppConfig.IrcUsername}"
+                       Password="{x:Static AppConfig.IrcPassword}"
+                       EndPoint="{x:Static AppConfig.IrcEndpoint}">
+        <mod:IrcChatModule.Inputs>
+            <Input x:Key="IrcChannelOctgn"/>
+            <Input x:Key="IrcChannelOctgnLobby"/>
+            <Input x:Key="IrcChannelOctgnDev"/>
+        </mod:IrcChatModule.Inputs>
+        <mod:IrcChatModule.Outputs>
+            <Output x:Key="IrcChannelOctgn"/>
+            <Output x:Key="IrcChannelOctgnLobby"/>
+            <Output x:Key="IrcChannelOctgnDev"/>
+        </mod:IrcChatModule.Outputs>
+    </mod:IrcChatModule>
+    <mod:SlackChatModule x:Key="SlackChatModule"
+                         BotName="{x:Static AppConfig.SlackBotName}"
+                         AuthToken="{x:Static AppConfig.SlackAuthToken}">
+        <mod:SlackChatModule.Inputs>
+            <Input x:Key="SlackChannelGeneral"/>
+            <Input x:Key="SlackChannelOctgnLobby"/>
+            <Input x:Key="SlackChannelOctgnDev"/>
+        </mod:SlackChatModule.Inputs>
+        <mod:SlackChatModule.Outputs>
+            <Output x:Key="SlackChannelGeneral"/>
+            <Output x:Key="SlackChannelOctgnLobby"/>
+            <Output x:Key="SlackChannelOctgnDev"/>
+        </mod:SlackChatModule.Outputs>
+    </mod:SlackChatModule>
+    <mod:XmppChatModule x:Key="XmppChatModule"
+                        Username="{x:Static AppConfig.XmppUsername}"
+                        Password="{x:Static AppConfig.XmppPassword}"
+                        Server="{x:Static AppConfig.XmppServer}"
+                        Resource="{x:Static AppConfig.XmppResource}"
+                        >
+        <mod:XmppChatModule.Inputs>
+            <Input x:Key="XmppLobby"/>
+        </mod:XmppChatModule.Inputs>
+        <mod:XmppChatModule.Outputs>
+            <Output x:Key="XmppLobby"/>
+        </mod:XmppChatModule.Outputs>
+    </mod:XmppChatModule>
+    <mod:WebhookModule x:Key="WebhookModule"
+                       AzureServiceBusWebhookQueue="{x:Static AppConfig.AzureServiceBusWebhookQueue}"
+                       >
+        <mod:WebhookModule.Inputs>
+            <Input x:Key="WebhookOctgn"/>
+            <Input x:Key="WebhookOctgnDev"/>
+            <Input x:Key="WebhookOctgnLobby"/>
+        </mod:WebhookModule.Inputs>
+    </mod:WebhookModule>
+    <Configuration.MessageRoutes>
+        <MessageRoute From="{Module IrcChatModule, Input=IrcChannelOctgn}"
+                      To="{Module SlackChatModule, Output=SlackChannelGeneral}"/>
+        <MessageRoute From="{Module IrcChatModule, Input=IrcChannelOctgnDev}"
+                      To="{Module SlackChatModule, Output=SlackChannelOctgnDev}"/>
+        <MessageRoute From="{Module IrcChatModule, Input=IrcChannelOctgnLobby}"
+                      To="{Module XmppChatModule, Output=XmppLobby}"/>
+
+        <MessageRoute From="{Module SlackChatModule, Input=SlackChannelGeneral}"
+                      To="{Module IrcChatModule, Output=IrcChannelOctgn}"/>
+        <!--<MessageRoute From="{Module SlackChatModule, Input=SlackChannelOctgnDev}"
+                      To="{Module IrcChatModule, Output=IrcChannelOctgnDev}"/>-->
+        <MessageRoute From="{Module SlackChatModule, Input=SlackChannelOctgnLobby}"
+                      To="{Module XmppChatModule, Output=XmppLobby}"/>
+
+        <MessageRoute From="{Module XmppChatModule, Input=XmppLobby}"
+                      To="{Module IrcChatModule, Output=IrcChannelOctgnLobby}"/>
+        <MessageRoute From="{Module XmppChatModule, Input=XmppLobby}"
+                      To="{Module SlackChatModule, Output=SlackChannelOctgnLobby}"/>
+
+        <!-- Webhook -->
+        <MessageRoute From="{Module WebhookModule, Input=WebhookOctgn}"
+                      To="{Module SlackChatModule, Output=SlackChannelGeneral}"/>
+        <MessageRoute From="{Module WebhookModule, Input=WebhookOctgn}"
+                      To="{Module IrcChatModule, Output=IrcChannelOctgn}"/>
+
+        <MessageRoute From="{Module WebhookModule, Input=WebhookOctgnDev}"
+                      To="{Module SlackChatModule, Output=SlackChannelOctgnDev}"/>
+        <MessageRoute From="{Module WebhookModule, Input=WebhookOctgnDev}"
+                      To="{Module IrcChatModule, Output=IrcChannelOctgnDev}"/>
+
+        <MessageRoute From="{Module WebhookModule, Input=WebhookOctgnLobby}"
+                      To="{Module SlackChatModule, Output=SlackChannelOctgnLobby}"/>
+        <MessageRoute From="{Module WebhookModule, Input=WebhookOctgnLobby}"
+                      To="{Module IrcChatModule, Output=IrcChannelOctgnLobby}"/>
+        <MessageRoute From="{Module WebhookModule, Input=WebhookOctgnLobby}"
+                      To="{Module XmppChatModule, Output=XmppLobby}"/>
+
+
+    </Configuration.MessageRoutes>
+</Configuration>
