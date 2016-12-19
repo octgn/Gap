@@ -113,12 +113,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="DeployPackage.ps1" />
     <None Include="Gap.nuspec" />
     <None Include="packages.config" />
-    <None Include="PostBuild.ps1" />
     <None Include="PostDeploy.ps1" />
-    <None Include="PreBuild.ps1" />
     <None Include="PreDeploy.ps1" />
   </ItemGroup>
   <ItemGroup>
