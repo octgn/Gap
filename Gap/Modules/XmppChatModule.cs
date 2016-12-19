@@ -85,6 +85,7 @@ namespace Gap.Modules
             Trace();
             if( !msg.From.User.Equals( "lobby", StringComparison.InvariantCultureIgnoreCase ) ) return;
             if( string.IsNullOrWhiteSpace( msg.Body ) || String.IsNullOrWhiteSpace( msg.From.Resource ) ) return;
+            if( msg.From.Resource.Equals( Username, StringComparison.InvariantCultureIgnoreCase ) ) return;
 
             Inputs["XmppLobby"].Push( this, new MessageItem( msg.From.Resource, msg.Body ) );
         }
