@@ -15,12 +15,14 @@ namespace Gap.Modules
 
         private SlackSocketClient _client;
         private System.Timers.Timer _timer;
+        private System.Timers.Timer _reconnectTimer;
 
         public override void Configure() {
             base.Configure();
             _client = new SlackSocketClient( AuthToken );
             _client.OnMessageReceived += Client_OnMessageReceived;
-            _timer = new System.Timers.Timer( 60000 * 10 );
+            _timer = new System.Timers.Timer( 60000 * 5 );
+            _reconnectTimer = new System.Timers.Timer( 30000 );
 
             Outputs["SlackChannelGeneral"].OnMessage += ChannelGeneral_OnMessage;
             Outputs["SlackChannelOctgnLobby"].OnMessage += ChannelOctgnLobby_OnMessage;
@@ -30,12 +32,16 @@ namespace Gap.Modules
         public void Start() {
             _timer.Elapsed += RefreshChannelsTimer_Elapsed;
             _timer.Start();
+            _reconnectTimer.Elapsed += ReconnectTimer_Elapsed;
+            _reconnectTimer.Start();
             _client.Connect( Client_OnConnected );
         }
 
         public void Stop() {
             _timer.Elapsed -= RefreshChannelsTimer_Elapsed;
             _timer.Stop();
+            _reconnectTimer.Elapsed -= ReconnectTimer_Elapsed;
+            _reconnectTimer.Stop();
             _client.CloseSocket();
         }
 
@@ -88,7 +94,7 @@ namespace Gap.Modules
 
         private void RefreshChannelsTimer_Elapsed( object sender, ElapsedEventArgs e ) {
             try {
-                using( var w1 = new ManualResetEventSlim() ) {
+                using( ManualResetEventSlim w1 = new ManualResetEventSlim() ) {
                     _client.GetChannelList( ( clr ) => {
                         try {
                             Log.Info( "Got Channels" );
@@ -105,6 +111,19 @@ namespace Gap.Modules
             }
         }
 
+        private void ReconnectTimer_Elapsed( object sender, ElapsedEventArgs e ) {
+            try {
+                // Reconnect if we need to
+                if( _client == null ) return;
+                if( !_client.IsConnected ) {
+                    Log.Warn( "Slack client disconnected, reconnecting..." );
+                    _client.Connect( Client_OnConnected );
+                }
+            } catch (Exception ex ) {
+                Log.Error( nameof( ReconnectTimer_Elapsed ), ex );
+            }
+        }
+
         protected override void Dispose( bool disposing ) {
             base.Dispose( disposing );
             if( !disposing ) return;
@@ -116,6 +135,9 @@ namespace Gap.Modules
             if( _client != null ) {
                 _client.OnMessageReceived -= Client_OnMessageReceived;
             }
+
+            _timer.Elapsed -= RefreshChannelsTimer_Elapsed;
+            _reconnectTimer.Elapsed -= ReconnectTimer_Elapsed;
 
             Stop();
         }
