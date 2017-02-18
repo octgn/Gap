@@ -82,6 +82,11 @@
             <param name="context">The binding context that provides context for the binding element.</param>
             <returns>An object from the binding stack, if present, or null if not found.</returns>
         </member>
+        <member name="T:Microsoft.ServiceBus.Channels.DelegatingStream">
+            <summary>
+            A Stream that delegates all its methods to an inner Stream.
+            </summary>
+        </member>
         <member name="M:Microsoft.ServiceBus.Channels.ThreadNeutralSemaphore.Abort">
             <summary>
              Abort the ThreadNeutralSemaphore object.
@@ -108,6 +113,11 @@
             </summary>
             <param name="certificate">The certificate need to validate</param>
         </member>
+        <member name="M:Microsoft.ServiceBus.Common.AsyncIOTask.Delay(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            If you're using this is there a reason not to just use Task.Delay?
+            </summary>
+        </member>
         <member name="M:Microsoft.ServiceBus.Common.ByteUtility.EndsWithTwoAsciiNewLines(System.Byte[],System.Int32)">
             <summary>
             Check if the given buffer ends with "\r\n\r\n" without having to allocate or convert byte[] into string
@@ -123,95 +133,42 @@
             Check if the given buffer contains the 2 specified ascii characters (in sequence) without having to allocate or convert byte[] into string
             </summary>
         </member>
-        <member name="T:Microsoft.ServiceBus.Common.Parallel.IteratorTask">
-            <summary>
-            Use IteratorTask (no &lt;TResult&gt;) if you do not have a return value.
-            </summary>
-        </member>
-        <member name="T:Microsoft.ServiceBus.Common.Parallel.IteratorTask`1">
-            <summary>
-            Use IteratorTask&lt;TResult&gt; when you DO have a return value.
-            Don't forget to call TrySetResult(result) to complete the Task!
-            </summary>
-        </member>
-        <member name="F:Microsoft.ServiceBus.Common.Parallel.IteratorTask`1.ExceptionPolicy.Transfer">
-            <summary>
-            ExceptionPolicy.Transfer is used if you want the task to be completed with
-            the exception when a step/Task throws.
-            </summary>
-        </member>
-        <member name="F:Microsoft.ServiceBus.Common.Parallel.IteratorTask`1.ExceptionPolicy.Continue">
-            <summary>
-            ExceptionPolicy.Continue is used if you want to ignore
-            the exception and continue next steps. The last exception can be checked/accessed with
-            Task.IsFaulted/Task.Exception properties.
-            </summary>
-        </member>
-        <member name="T:Microsoft.ServiceBus.Common.Parallel.TaskCompletionSourceExtensions">
+        <member name="T:Microsoft.ServiceBus.Common.TaskCompletionSourceExtensions">
             <summary>Extension methods for TaskCompletionSource.</summary>
         </member>
-        <member name="M:Microsoft.ServiceBus.Common.Parallel.TaskCompletionSourceExtensions.TrySetFromTask``1(System.Threading.Tasks.TaskCompletionSource{``0},System.Threading.Tasks.Task)">
+        <member name="M:Microsoft.ServiceBus.Common.TaskCompletionSourceExtensions.TrySetFromTask``1(System.Threading.Tasks.TaskCompletionSource{``0},System.Threading.Tasks.Task)">
             <summary>Attempts to transfer the result of a Task to the TaskCompletionSource.</summary>
             <typeparam name="TResult">Specifies the type of the result.</typeparam>
             <param name="resultSetter">The TaskCompletionSource.</param>
             <param name="task">The task whose completion results should be transfered.</param>
             <returns>Whether the transfer could be completed.</returns>
         </member>
-        <member name="T:Microsoft.ServiceBus.Common.Parallel.TaskExtensions">
+        <member name="T:Microsoft.ServiceBus.Common.TaskExtensions">
             <summary>Extensions methods for Task.</summary>
         </member>
-        <member name="M:Microsoft.ServiceBus.Common.Parallel.TaskExtensions.Then(System.Threading.Tasks.Task,System.Func{System.Threading.Tasks.Task})">
+        <member name="M:Microsoft.ServiceBus.Common.TaskExtensions.Then(System.Threading.Tasks.Task,System.Func{System.Threading.Tasks.Task})">
             <summary>Creates a task that represents the completion of a second task when a first task completes.</summary>
             <param name="task">The first task.</param>
             <param name="next">The function that produces the second task.</param>
             <returns>The task that represents the completion of both the first and second task.</returns>
         </member>
-        <member name="M:Microsoft.ServiceBus.Common.Parallel.TaskExtensions.Then``1(System.Threading.Tasks.Task{``0},System.Func{``0,System.Threading.Tasks.Task})">
+        <member name="M:Microsoft.ServiceBus.Common.TaskExtensions.Then``1(System.Threading.Tasks.Task{``0},System.Func{``0,System.Threading.Tasks.Task})">
             <summary>Creates a task that represents the completion of a second task when a first task completes.</summary>
             <param name="task">The first task.</param>
             <param name="next">The function that produces the second task based on the result of the first task.</param>
             <returns>The task that represents the completion of both the first and second task.</returns>
         </member>
-        <member name="M:Microsoft.ServiceBus.Common.Parallel.TaskExtensions.Then``1(System.Threading.Tasks.Task,System.Func{System.Threading.Tasks.Task{``0}})">
+        <member name="M:Microsoft.ServiceBus.Common.TaskExtensions.Then``1(System.Threading.Tasks.Task,System.Func{System.Threading.Tasks.Task{``0}})">
             <summary>Creates a task that represents the completion of a second task when a first task completes.</summary>
             <param name="task">The first task.</param>
             <param name="next">The function that produces the second task.</param>
             <returns>The task that represents the completion of both the first and second task.</returns>
         </member>
-        <member name="M:Microsoft.ServiceBus.Common.Parallel.TaskExtensions.Then``2(System.Threading.Tasks.Task{``0},System.Func{``0,System.Threading.Tasks.Task{``1}})">
+        <member name="M:Microsoft.ServiceBus.Common.TaskExtensions.Then``2(System.Threading.Tasks.Task{``0},System.Func{``0,System.Threading.Tasks.Task{``1}})">
             <summary>Creates a task that represents the completion of a second task when a first task completes.</summary>
             <param name="task">The first task.</param>
             <param name="next">The function that produces the second task based on the result of the first.</param>
             <returns>The task that represents the completion of both the first and second task.</returns>
-        </member>
-        <member name="M:Microsoft.ServiceBus.Common.Parallel.TaskHelpers.CreateTask(System.Func{System.AsyncCallback,System.Object,System.IAsyncResult},System.Action{System.IAsyncResult},System.Object)">
-            <summary>
-            Create a Task based on Begin/End IAsyncResult pattern.
-            </summary>
-            <param name="begin"></param>
-            <param name="end"></param>
-            <param name="state"> 
-            This parameter helps reduce allocations by passing state to the Funcs. e.g.:
-             await TaskHelpers.CreateTask(
-                 (c, s) => ((Transaction)s).BeginCommit(c, s),
-                 (a) => ((Transaction)a.AsyncState).EndCommit(a),
-                 transaction);
-            </param>
-        </member>
-        <member name="M:Microsoft.ServiceBus.Common.Parallel.TaskHelpers.CreateTransactionalTask(System.Transactions.Transaction,System.Func{System.AsyncCallback,System.Object,System.IAsyncResult},System.Action{System.IAsyncResult},System.Object)">
-            <summary>
-            Create a Task based on Begin/End IAsyncResult pattern.
-            </summary>
-            <param name="transaction">The transaction (optional) to use.  If not null a TransactionScope will be used when calling the begin Func.</param>
-            <param name="begin"></param>
-            <param name="end"></param>
-            <param name="state"> 
-            This parameter helps reduce allocations by passing state to the Funcs. e.g.:
-             await TaskHelpers.CreateTask(
-                 (c, s) => ((Transaction)s).BeginCommit(c, s),
-                 (a) => ((Transaction)a.AsyncState).EndCommit(a),
-                 transaction);
-            </param>
         </member>
         <member name="T:Microsoft.ServiceBus.Common.ReadOnlyDictionary45`2">
             <summary />
@@ -314,6 +271,155 @@
             <summary />
             <param name="array" />
             <param name="index" />
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromAsync(System.Func{System.AsyncCallback,System.Object,System.IAsyncResult},System.Action{System.IAsyncResult},System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+            <param name="begin"></param>
+            <param name="end"></param>
+            <param name="state"> 
+            This parameter helps reduce allocations by passing state to the Funcs. e.g.:
+             await TaskHelpers.FromAsync(
+                 (c, s) => ((Transaction)s).BeginCommit(c, s),
+                 (a) => ((Transaction)a.AsyncState).EndCommit(a),
+                 transaction);
+            </param>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromAsync``1(System.Func{``0,System.AsyncCallback,System.Object,System.IAsyncResult},System.Action{System.IAsyncResult},``0,System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromAsync``2(System.Func{``0,``1,System.AsyncCallback,System.Object,System.IAsyncResult},System.Action{System.IAsyncResult},``0,``1,System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromAsync``3(System.Func{``0,``1,``2,System.AsyncCallback,System.Object,System.IAsyncResult},System.Action{System.IAsyncResult},``0,``1,``2,System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromAsync``1(System.Func{System.AsyncCallback,System.Object,System.IAsyncResult},System.Func{System.IAsyncResult,``0},System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromAsync``2(System.Func{``0,System.AsyncCallback,System.Object,System.IAsyncResult},System.Func{System.IAsyncResult,``1},``0,System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromAsync``3(System.Func{``0,``1,System.AsyncCallback,System.Object,System.IAsyncResult},System.Func{System.IAsyncResult,``2},``0,``1,System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromAsync``4(System.Func{``0,``1,``2,System.AsyncCallback,System.Object,System.IAsyncResult},System.Func{System.IAsyncResult,``3},``0,``1,``2,System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.CreateTransactionalTask(System.Transactions.Transaction,System.Func{System.AsyncCallback,System.Object,System.IAsyncResult},System.Action{System.IAsyncResult},System.Object)">
+            <summary>
+            Create a Task based on Begin/End IAsyncResult pattern.
+            This is a wrapper around Task.Factory.FromAsync with the additional guarantee that if the begin delegate
+            throws an Exception it will result in a Task with that exception instead of the exception being thrown from this method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromException(System.Exception)">
+            <summary>
+            Creates a Task that has completed with a specified exception.
+            Once the code has moved to .NET 4.6 just use Task.FromException;
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromException``1(System.Exception)">
+            <summary>
+            Creates a Task&lt;TResult&gt; that's completed with a specified exception.
+            Once the code has moved to .NET 4.6 just use Task.FromException&lt;TResult&gt;
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.TaskHelpers.FromResult``1(``0)">
+            <summary>
+            Returns a Task&lt;TResult&gt; that's completed successfully with the specified result.
+            It's comparable to Task.FromResult() but doesn't allocate if T is null.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionExtensions.Rethrow(System.Exception)">
+            <summary>
+            Rethrow the Exception while preserving the previous throw location. The following string is inserted in the
+            stack trace to indicate the restore point: "End of stack trace from the previous location where the 
+            exception was thrown". This is similar to the way inner exceptions or marshaled exceptions are indicated in stack traces.
+            <para />This method always throws an exception.  It has a return value in order to write calling code like below
+            so that the compiler also knows the code doesn't continue after this call:
+            <para/>
+            throw exception.Rethrow();
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionExtensions.ThrowException(System.Exception)">
+            <summary>
+            ThrowException is a helper/wrapper method that simply calls "throw exception;".  This wrapper method exists so that 
+            the calling method (Rethrow) will indeed get inlined (having a direct throw in Rethrow causes it to not be inlined any more).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionTrace.AsError``1(System.Func{System.String,``0},System.String)">
+            <summary>
+            This overload checks for TrackingContext.Current and if found ensures that the TrackingId information is appended to the
+            message passed to the Exception..ctor (if none is there already).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionTrace.AsError``1(System.Func{System.String,``0},System.String,Microsoft.ServiceBus.Tracing.TrackingContext)">
+            <summary>
+            This overload ensures that the TrackingId information is appended to the
+            message passed to the Exception..ctor (if none is there already).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionTrace.AsInformation``1(System.Func{System.String,``0},System.String)">
+            <summary>
+            This overload ensures that the TrackingId information is appended to the
+            message passed to the Exception..ctor (if none is there already).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionTrace.AsInformation``1(System.Func{System.String,``0},System.String,Microsoft.ServiceBus.Tracing.TrackingContext)">
+            <summary>
+            This overload ensures that the TrackingId information is appended to the
+            message passed to the Exception..ctor (if none is there already).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionTrace.AsWarning``1(System.Func{System.String,``0},System.String)">
+            <summary>
+            This overload uses TrackingContext.Current and ensures that the TrackingId information is appended to the
+            message passed to the Exception..ctor (if none is there already).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionTrace.AsWarning``1(System.Func{System.String,``0},System.String,Microsoft.ServiceBus.Tracing.TrackingContext)">
+            <summary>
+            This overload ensures that the TrackingId information is appended to the
+            message passed to the Exception..ctor (if none is there already).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Common.ExceptionTrace.TraceException``1(System.Func{System.String,``0},System.String,Microsoft.ServiceBus.Tracing.TrackingContext,System.Diagnostics.Tracing.EventLevel)">
+            <summary>
+            This overload ensures that the TrackingId information is appended to the
+            message passed to the Exception..ctor (if none there already).
+            </summary>
         </member>
         <member name="M:Microsoft.ServiceBus.Common.InternalBufferManager.PreallocatedBufferManager.ReturnBuffer(System.Byte[])">
             <summary>
@@ -491,6 +597,12 @@
             <param name="param3">Parameter 3 for string: The requested partition count exceeded the maximum partitions allowed for Namespace: {0}. Maximum allowed partitions per thoughput unit: {1}. Current throughput units: {2}. Requested partition count: {3}, whereas, available partition count: {4}. Increase through put units of the Service Bus Namespace to be able to create more partitions.</param>
             <param name="param4">Parameter 4 for string: The requested partition count exceeded the maximum partitions allowed for Namespace: {0}. Maximum allowed partitions per thoughput unit: {1}. Current throughput units: {2}. Requested partition count: {3}, whereas, available partition count: {4}. Increase through put units of the Service Bus Namespace to be able to create more partitions.</param>
         </member>
+        <member name="M:Microsoft.ServiceBus.AmqpRelay.UpdateHeartbeatIfNeeded">
+            <summary>
+            Store the current disconnect time, check if this instance has gotten disconnected X times
+            in the last Y minutes.  If so return true to turn on a heartbeat to keep connections alive.
+            </summary>
+        </member>
         <member name="T:Microsoft.ServiceBus.IoTTokenProvider">
             <summary />
         </member>
@@ -546,6 +658,12 @@
         </member>
         <member name="F:Microsoft.ServiceBus.Messaging.Amqp.Serialization.EncodingType.Map">
             <summary>The Map encoding type.</summary>
+        </member>
+        <member name="T:Microsoft.ServiceBus.Messaging.Amqp.AmqpMessageProperty">
+            <summary>
+            This WCF Message Property allows you to specify AMQP ApplicationProperties to be 
+            set when the WCF Message is converted to an AMQP message.
+            </summary>
         </member>
         <member name="M:Microsoft.ServiceBus.Messaging.Amqp.Sasl.SaslNegotiator.OnSaslServerMechanisms(Microsoft.ServiceBus.Messaging.Amqp.Sasl.SaslMechanisms)">
             <summary>
@@ -3521,6 +3639,12 @@
         <member name="P:Microsoft.ServiceBus.Messaging.RelayDescription.CollectionName">
             <summary>Gets or sets the name of the collection associated with the relay.</summary>
             <value>The name of the collection associated with the relay.</value>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Messaging.RelayDescription.ClearManageOnlyMembers">
+            <summary>
+            This is so users with Send or Listen tokens can still call GetRelay[s], just not read everything,
+            especially the AuthorizationRules and any other members which require the Manage permission.
+            </summary>
         </member>
         <member name="T:Microsoft.ServiceBus.Messaging.TransactionSizeExceededException">
             <summary>Represents an exception when the transaction size exceeds.</summary>
@@ -11765,6 +11889,9 @@
         <member name="F:Microsoft.ServiceBus.Management.NamespaceType.EventHub">
             <summary>Specifies that the namespace should contain Event Hubs.</summary>
         </member>
+        <member name="F:Microsoft.ServiceBus.Management.NamespaceType.Relay">
+            <summary>Specifies that the namespace should contain Relays and Hybrid Connections.</summary>
+        </member>
         <member name="T:Microsoft.ServiceBus.Management.PortalResourceType">
             <summary>Enumerates the types of portal resource.</summary>
         </member>
@@ -12252,6 +12379,60 @@
         <member name="P:Microsoft.ServiceBus.Management.UserValidationResult.Reason">
             <summary>Gets or sets the reason for user validation.</summary>
             <value>the reason for user validation.</value>
+        </member>
+        <member name="T:Microsoft.ServiceBus.Relay.HybridConnectionDescription">
+            <summary>Represents a HybridConnection description.</summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Relay.HybridConnectionDescription.#ctor(System.String)">
+            <summary>Initializes a new instance of the <see cref="T:Microsoft.ServiceBus.Relay.HybridConnectionDescription" /> class.</summary>
+            <param name="path">The relative path of the HybridConnection.</param>
+        </member>
+        <member name="P:Microsoft.ServiceBus.Relay.HybridConnectionDescription.Path">
+            <summary>Gets or sets the relative path of the HybridConnection.</summary>
+            <value>The relative path of the HybridConnection.</value>
+        </member>
+        <member name="P:Microsoft.ServiceBus.Relay.HybridConnectionDescription.CreatedAt">
+            <summary>Gets or sets the exact time the HybridConnection was created.</summary>
+            <value>The exact time the HybridConnection was created.</value>
+        </member>
+        <member name="P:Microsoft.ServiceBus.Relay.HybridConnectionDescription.UpdatedAt">
+            <summary>Gets or sets the date when the HybridConnection was updated.</summary>
+            <value>The date when the HybridConnection was updated.</value>
+        </member>
+        <member name="P:Microsoft.ServiceBus.Relay.HybridConnectionDescription.ListenerCount">
+            <summary>Gets or sets the number of listeners for this HybridConnection.</summary>
+            <value>The number of listeners for this HybridConnection.</value>
+        </member>
+        <member name="P:Microsoft.ServiceBus.Relay.HybridConnectionDescription.RequiresClientAuthorization">
+            <summary>Gets or sets whether client authorization is needed for this HybridConnection.</summary>
+            <value>true if client authorization is needed for this HybridConnection; otherwise, false.</value>
+        </member>
+        <member name="P:Microsoft.ServiceBus.Relay.HybridConnectionDescription.Authorization">
+            <summary>Gets the <see cref="T:Microsoft.ServiceBus.Messaging.AuthorizationRules" />.</summary>
+            <value>The <see cref="T:Microsoft.ServiceBus.Messaging.AuthorizationRules" />.</value>
+        </member>
+        <member name="P:Microsoft.ServiceBus.Relay.HybridConnectionDescription.UserMetadata">
+            <summary>Gets or sets the user metadata associated with this instance.</summary>
+            <value>The user metadata associated with this instance.</value>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown if the length of value is greater than 1024 characters.</exception>
+        </member>
+        <member name="P:Microsoft.ServiceBus.Relay.HybridConnectionDescription.CollectionName">
+            <summary>Gets or sets the name of the collection associated with the HybridConnection.</summary>
+            <value>The name of the collection associated with the HybridConnection.</value>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Relay.HybridConnectionDescription.ClearManageOnlyMembers">
+            <summary>
+            This is so users with Send or Listen tokens can still call GetHybridConnection[s], just not read everything,
+            especially the AuthorizationRules and any other members which require the Manage permission.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Relay.ManageClaimNotRequiredAttribute.ClearManageOnlyMembers(System.Object)">
+            <summary>
+            This is so users with Send or Listen tokens can still call GetRelay/GetHybridConnection, just not read everything,
+            especially the AuthorizationRules and any other members which require the Manage permission.
+            Find all the Properties and Fields with [DataMember] attribute. Then, if the DataMember property/field
+            does not also have a [ManageClaimNotRequired] attribute, clear it.
+            </summary>
         </member>
         <member name="T:Microsoft.ServiceBus.RelayNotFoundException">
             <summary>The exception that is thrown when the ServiceBus relay is not found.</summary>
@@ -16037,6 +16218,49 @@
             <param name="message">the message to check</param>
             <returns>true if the message is SOAP 1.1</returns>
         </member>
+        <member name="M:Microsoft.ServiceBus.RelayedHttpUtility.ParseHttpHeaderString(System.String,System.Action{System.String,System.String})">
+            <summary>
+            Parse Http headers from a string that matches the HTTP Header Protocol format:
+            <para/>
+            Header1: Header1Value\r\n
+            <para/>
+            Header2: Header2Value\r\n
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.RelayedHttpUtility.ToHttpHeaderString(System.Collections.Specialized.NameValueCollection)">
+            <summary>
+            Convert a WebHeaderCollection/NameValueCollection of HTTP Headers into a 
+            protocol string with the format:
+            <para/>
+            Header1: Header1Value\r\n
+            <para/>
+            Header2: Header2Value\r\n
+            <para/>
+            This is a clone of WebHeaderCollection.ToString() which gives this nice output 
+            but isn't documented as such and therefore it could potentially change.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ServiceBus.RelayedConnectMessage.TcpEndpoint">
+            <summary>
+            Gets the TCP endpoint to rendezvous with.  If the server provided an IPv4
+            Address then the returned value will be an IPEndPoint.  If no IPv4 address only
+            instance DNS was provided then the value will be a DnsEndPoint.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ServiceBus.RelayedConnectMessage.HttpEndpoint">
+            <summary>
+            Gets the HTTP endpoint to rendezvous with.  If the server provided an instance DNS
+            name then this will be a DnsEndPoint like { Host="g0-prod-sn1-001-sb.servicebus.windows.net", Port=80 }.  If no 
+            instance DNS was provided then the value will be an IPEndpoint (IPv4).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ServiceBus.RelayedConnectMessage.HttpsEndpoint">
+            <summary>
+            Gets the HTTPS endpoint to rendezvous with.  If the server provided an instance DNS
+            name then this will be a DnsEndPoint like { Host="g0-prod-sn1-001-sb.servicebus.windows.net", Port=443 }.  If no 
+            instance DNS was provided then the value will be an IPEndpoint (IPv4).
+            </summary>
+        </member>
         <member name="T:Microsoft.ServiceBus.TokenProvider">
             <summary>Represents a security token provider with built-in factory methods returning some well-known token providers.</summary>
         </member>
@@ -16379,18 +16603,6 @@
         <member name="P:Microsoft.ServiceBus.SocketConnectionPoolSettings.MaxOutboundConnectionsPerEndpoint">
             <summary>Gets or sets the maximum number of outbound connections for each endpoint that is cached in the connection pool.</summary>
             <value>The maximum number of outbound connections for each endpoint that is cached in the connection pool.</value>
-        </member>
-        <member name="M:Microsoft.ServiceBus.SocketMessageHelper.BeginReceiveBytes(Microsoft.ServiceBus.Channels.IConnection,System.Int32,System.TimeSpan,System.AsyncCallback,System.Object)">
-            <summary>
-            Receive the requested number of bytes.  If the connection closes then fewer bytes can be returned.
-            Therefore callers should check the size of the ArraySegment&lt;byte&gt; returned from EndReceiveBytes.
-            </summary>
-            <param name="connection">The IConnection</param>
-            <param name="size">The expected number of bytes</param>
-            <param name="timeout">Timeout to use</param>
-            <param name="callback">AsyncCallback</param>
-            <param name="state">async state</param>
-            <returns>IAsyncResult instance</returns>
         </member>
         <member name="T:Microsoft.ServiceBus.Description.TcpRelayTransportBindingElementImporter">
             <summary>Maps WSDL contracts and policy assertions into Azure Service Bus TcpRelayTransport bindings.</summary>
@@ -17817,6 +18029,15 @@
             <summary>Gets or sets the extension data objects for the error.</summary>
             <value>The extension data objects for the error.</value>
         </member>
+        <member name="M:Microsoft.ServiceBus.ServiceBusUriHelper.FilterQueryString(System.String,System.Int32,System.Int32)">
+            <summary>
+            Remove a queryString parameter and while leaving the rest of the queryString properly formatted including only those
+            ampersands which are required after the query string parameter identified by removeStartIndex+removeLength is removed.
+            <para/>Example1: queryString = &quot;a=b&amp;c=d&amp;e=f&quot;, removeStartIndex = 4, removeLength = 3 results in &quot;a=b&amp;e=f&quot;
+            <para/>Example2: queryString = &quot;a=b&amp;c=d&quot;, removeStartIndex = 0, removeLength = 3 results in &quot;c=d&quot;
+            <para/>Example3: queryString = &quot;a=b&amp;c=d&quot;, removeStartIndex = 4, removeLength = 3 results in &quot;a=b&quot;
+            </summary>
+        </member>
         <member name="M:Microsoft.ServiceBus.ServiceBusUriHelper.ParseServiceNamespace(System.Uri,System.String,System.Boolean)">
             <summary>
             TODO: See if we can remove this API. This was moved from Microsoft.ServiceBus.Channels.dll so that
@@ -17849,6 +18070,18 @@
             
                     string s = SR.GetString(SR.MyIdenfitier);
              </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.ExtensionMethods.ToHostPortString(System.Net.EndPoint)">
+            <summary>
+            A Helper method to convert a System.Net.EndPoint to a string like "host:8080".
+            This is necessary because DnsEndPoint.ToString() returns something like "Unspecified/hostname:80"
+            (where "Unspecified" is the AddressFamily).
+            </summary>
+        </member>
+        <member name="T:Microsoft.ServiceBus.Tracing.TrackingContextIteratorAsyncResult`1">
+            <summary>
+            This is a base class for IteratorAsyncResults that need a TrackingContext.
+            </summary>
         </member>
         <member name="T:Microsoft.ServiceBus.Tracing.ControllerCommand">
             <summary>Specifies an enumeration of controller commands.</summary>
@@ -18689,6 +18922,12 @@
         <member name="F:Microsoft.ServiceBus.Tracing.TrackingContext.HeaderNamespace">
             <summary>Specifies the header namespace.</summary>
         </member>
+        <member name="P:Microsoft.ServiceBus.Tracing.TrackingContext.Current">
+            <summary>
+            Get the ambient TrackingContext if one is set.  In order to set TrackingContext.Current create a
+            TrackingContext.Scope() in a using or try/finally block (always Dispose when finished).
+            </summary>
+        </member>
         <member name="P:Microsoft.ServiceBus.Tracing.TrackingContext.TrackingId">
             <summary> Returns the tracking id used in this context </summary>
         </member>
@@ -18720,6 +18959,24 @@
             </summary>
             <param name="guidTrackingId">TrackingId to use for the tracking context</param>
             <param name="overrideSystemTracker">subsystem-specific string like entityName to be used in the tracking context</param>
+            <returns>TrackingContext</returns>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.TrackingContext.Create">
+            <summary>
+            Generate TrackingContext with a new Guid/TrackingId.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.TrackingContext.Create(System.Uri)">
+            <summary>
+            Create a new tracking context with a new Guid/TrackingId and given subsystemId.
+            </summary>
+            <param name="subsystemId">subsystem-specific Uri like entity address to be used in the tracking context</param>
+            <returns>TrackingContext</returns>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.TrackingContext.Create(System.String,System.Uri,System.Boolean)">
+            <summary>
+            Create a new tracking context with the given TrackingId and SubsystemId.
+            </summary>
             <returns>TrackingContext</returns>
         </member>
         <member name="M:Microsoft.ServiceBus.Tracing.TrackingContext.GetInstance(System.String,System.String,System.String,System.String,System.Boolean)">
@@ -18767,6 +19024,24 @@
             </summary>
             <param name="roleIdentifier">the Role id</param>
             <param name="rolePrefix">Prefix for the role component</param>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.TrackingContext.CreateMessage(System.String)">
+            <summary>
+            If there is a value in TrackingContext.Current and the message doesn't already contain
+            "TrackingId" then format the message with tracking information.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.TrackingContext.CreateTrackableErrorMessage(System.String)">
+            <summary>
+            Ensures the given string contains a TrackingId. If one is already present, nothing occurs.
+            Otherwise TrackingId, Timestamp, and if present, SystemTracker are added.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ServiceBus.Tracing.TrackingContext.Scope">
+            <summary>
+            Assign the given TrackingContext to TrackingContext.Current for the given scope.  
+            TrackingContext.Scope.Dispose() restores the previous TrackingContext.Current.
+            </summary>
         </member>
         <member name="T:Microsoft.ServiceBus.Tracing.SystemTrackerHeader">
             <summary>
@@ -19423,10 +19698,11 @@
             <param name="param1">Parameter 1 for string: Link manager is performing '{0}' on link '{1}' (info: {2}).</param>
             <param name="param2">Parameter 2 for string: Link manager is performing '{0}' on link '{1}' (info: {2}).</param>
         </member>
-        <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_AmqpListenSocketAcceptError(System.Object,System.Object)">
-            <summary>Gets localized string like: The listener encountered an error during accept (retry:{0}). Error: {1}.</summary>
-            <param name="param0">Parameter 0 for string: The listener encountered an error during accept (retry:{0}). Error: {1}.</param>
-            <param name="param1">Parameter 1 for string: The listener encountered an error during accept (retry:{0}). Error: {1}.</param>
+        <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_AmqpListenSocketAcceptError(System.Object,System.Object,System.Object)">
+            <summary>Gets localized string like: The listener {0} encountered an error during accept (retry:{1}). Error: {2}.</summary>
+            <param name="param0">Parameter 0 for string: The listener {0} encountered an error during accept (retry:{1}). Error: {2}.</param>
+            <param name="param1">Parameter 1 for string: The listener {0} encountered an error during accept (retry:{1}). Error: {2}.</param>
+            <param name="param2">Parameter 2 for string: The listener {0} encountered an error during accept (retry:{1}). Error: {2}.</param>
         </member>
         <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_AmqpDynamicBufferSizeChange(System.Object,System.Object,System.Object,System.Object)">
             <summary>Gets localized string like: {0}: The {1} buffer size is dynamically changed from {2} to {3}.</summary>
@@ -19762,10 +20038,11 @@
             <summary>Gets localized string like: HybridConnectionClient Management Server is stopping on port {0}.</summary>
             <param name="param0">Parameter 0 for string: HybridConnectionClient Management Server is stopping on port {0}.</param>
         </member>
-        <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_SingletonManagerUnloadSucceeded(System.Object,System.Object)">
-            <summary>Gets localized string like: {0} unloaded an instance (key = {1}).</summary>
-            <param name="param0">Parameter 0 for string: {0} unloaded an instance (key = {1}).</param>
-            <param name="param1">Parameter 1 for string: {0} unloaded an instance (key = {1}).</param>
+        <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_SingletonManagerUnloadSucceeded(System.Object,System.Object,System.Object)">
+            <summary>Gets localized string like: {0} unloaded an instance (key = {1}, value = {2}).</summary>
+            <param name="param0">Parameter 0 for string: {0} unloaded an instance (key = {1}, value = {2}).</param>
+            <param name="param1">Parameter 1 for string: {0} unloaded an instance (key = {1}, value = {2}).</param>
+            <param name="param2">Parameter 2 for string: {0} unloaded an instance (key = {1}, value = {2}).</param>
         </member>
         <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_BufferQuotaDecreased(System.Object,System.Object)">
             <summary>Gets localized string like: Quota for BufferSize {0} Increased to {1} </summary>
@@ -19785,6 +20062,19 @@
         <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_ProcessExited(System.Object)">
             <summary>Gets localized string like: Critical error occurred and running process exited. Error message is {0}.</summary>
             <param name="param0">Parameter 0 for string: Critical error occurred and running process exited. Error message is {0}.</param>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_OperationStarted(System.Object)">
+            <summary>Gets localized string like: Operation {0} started.</summary>
+            <param name="param0">Parameter 0 for string: Operation {0} started.</param>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_OperationComplete(System.Object)">
+            <summary>Gets localized string like: Operation {0} was complete.</summary>
+            <param name="param0">Parameter 0 for string: Operation {0} was complete.</param>
+        </member>
+        <member name="M:Microsoft.ServiceBus.Tracing.EventDefinitionResources.event_CriticalErrorOccurred(System.Object,System.Object)">
+            <summary>Gets localized string like: Operation {0} failed with an error {1}.</summary>
+            <param name="param0">Parameter 0 for string: Operation {0} failed with an error {1}.</param>
+            <param name="param1">Parameter 1 for string: Operation {0} failed with an error {1}.</param>
         </member>
         <member name="P:Microsoft.ServiceBus.Tracing.EventSourceSR.Event_IllegalID">
             <summary>Gets localized string like: Event IDs must be greater than zero.</summary>
@@ -19858,6 +20148,11 @@
             <summary>Gets localized string like: Event name {0} used more than once. If you want to overload a method, the overloaded method should have a [Event(-1)] attribute to indicate the method should not have associated meta-data.</summary>
             <param name="param0">Parameter 0 for string: Event name {0} used more than once. If you want to overload a method, the overloaded method should have a [Event(-1)] attribute to indicate the method should not have associated meta-data.</param>
         </member>
+        <member name="M:Microsoft.ServiceBus.StringExtensions.EnsureEndsWith(System.String,System.String,System.StringComparison)">
+            <summary>
+            Ensures the given string ends with the requested pattern.  If it does no allocations are performed.
+            </summary>
+        </member>
         <member name="T:Microsoft.ServiceBus.ServiceBusEventSource">
             <summary>
             EventSource for the new Dynamic EventSource type of Microsoft-Azure-ServiceBus traces.
@@ -19868,7 +20163,7 @@
             
             Do not explicity include the Guid here, since EventSource has a mechanism to automatically
             map to an EventSource Guid based on the Name (Microsoft-Azure-ServiceBus).  The Guid will 
-            be 853e0474-d044-58cd-5623-4b4ad2abfba9 as long as the name stays Microsoft-Azure-ServiceBus
+            be {853e0474-d044-58cd-5623-4b4ad2abfba9} as long as the name stays Microsoft-Azure-ServiceBus
             </summary>
         </member>
         <member name="T:Microsoft.ServiceBus.TransportClientEndpointBehavior">
@@ -20126,7 +20421,7 @@
             <param name="description" />
         </member>
         <member name="M:Microsoft.ServiceBus.NamespaceManager.CreateRelayAsync(System.String,Microsoft.ServiceBus.RelayType)">
-            <summary>Asynchronously creates a new queue in the service namespace with the given path and type.</summary>
+            <summary>Asynchronously creates a new relay in the service namespace with the given path and type.</summary>
             <param name="path">The path of the queue relative to the service namespace base address.</param>
             <param name="type">The relay type.</param>
             <returns>The <see cref="T:Microsoft.ServiceBus.Messaging.RelayDescription" /> object for the newly created relay.</returns>
@@ -22218,7 +22513,7 @@
             <summary>Gets localized string like: The specified value ({0}) is invalid. "maxConcurrentCalls" must be greater than zero.</summary>
             <param name="param0">Parameter 0 for string: The specified value ({0}) is invalid. "maxConcurrentCalls" must be greater than zero.</param>
         </member>
-        <member name="M:Microsoft.ServiceBus.SRClient.HttpServerAlreadyRunning(System.Object)">
+        <member name="M:Microsoft.ServiceBus.SRClient.InstanceAlreadyRunning(System.Object)">
             <summary>Gets localized string like: This '{0}' instance has already been started once. To start another instance, please create a new '{0}' object and start that.</summary>
             <param name="param0">Parameter 0 for string: This '{0}' instance has already been started once. To start another instance, please create a new '{0}' object and start that.</param>
         </member>
@@ -22512,6 +22807,14 @@
             <summary>Gets localized string like: This SDK does not support operation '{0}' for an entity with partitioning enabled. Please use a newer version of the SDK.</summary>
             <param name="param0">Parameter 0 for string: This SDK does not support operation '{0}' for an entity with partitioning enabled. Please use a newer version of the SDK.</param>
         </member>
+        <member name="M:Microsoft.ServiceBus.SRClient.ArchiveInputHasQuotes(System.Object)">
+            <summary>Gets localized string like: Please remove the quotes surrounding '{0}'.</summary>
+            <param name="param0">Parameter 0 for string: Please remove the quotes surrounding '{0}'.</param>
+        </member>
+        <member name="M:Microsoft.ServiceBus.SRClient.ArchiveNullOrEmptyInput(System.Object)">
+            <summary>Gets localized string like: '{0}' is null or empty.</summary>
+            <param name="param0">Parameter 0 for string: '{0}' is null or empty.</param>
+        </member>
         <member name="P:Microsoft.ServiceBus.SRAmqp.AmqpFramingError">
             <summary>Gets localized string like: A valid frame header cannot be formed from the incoming byte stream.</summary>
         </member>
@@ -22526,9 +22829,6 @@
         </member>
         <member name="P:Microsoft.ServiceBus.SRAmqp.AmqpDynamicTerminusNotSupported">
             <summary>Gets localized string like: Dynamic terminus is not currently supported.</summary>
-        </member>
-        <member name="P:Microsoft.ServiceBus.SRAmqp.AmqpConnectionInactive">
-            <summary>Gets localized string like: The connection was inactive for more than the allowed period of time.</summary>
         </member>
         <member name="P:Microsoft.ServiceBus.SRAmqp.AmqpInvalidRemoteIp">
             <summary>Gets localized string like: Unable to get valid source IP address for connection.</summary>
@@ -22612,6 +22912,11 @@
             <param name="param0">Parameter 0 for string: The received message (delivery-id:{0}, size:{1} bytes) exceeds the limit ({2} bytes) currently allowed on the link.</param>
             <param name="param1">Parameter 1 for string: The received message (delivery-id:{0}, size:{1} bytes) exceeds the limit ({2} bytes) currently allowed on the link.</param>
             <param name="param2">Parameter 2 for string: The received message (delivery-id:{0}, size:{1} bytes) exceeds the limit ({2} bytes) currently allowed on the link.</param>
+        </member>
+        <member name="M:Microsoft.ServiceBus.SRAmqp.AmqpConnectionInactive(System.Object,System.Object)">
+            <summary>Gets localized string like: The connection was inactive for more than the allowed {0} milliseconds and is closed by container '{1}'.</summary>
+            <param name="param0">Parameter 0 for string: The connection was inactive for more than the allowed {0} milliseconds and is closed by container '{1}'.</param>
+            <param name="param1">Parameter 1 for string: The connection was inactive for more than the allowed {0} milliseconds and is closed by container '{1}'.</param>
         </member>
         <member name="M:Microsoft.ServiceBus.SRAmqp.AmqpTransferLimitExceeded(System.Object)">
             <summary>Gets localized string like: There is no link credit to accept the delivery (id={0}).</summary>
@@ -22892,7 +23197,10 @@
             <remarks>A completed task can be useful for using ContinueWith overloads where there aren't StartNew equivalents.</remarks>
         </member>
         <member name="F:System.Threading.Tasks.CompletedTask.Default">
-            <summary>Gets a completed Task.</summary>
+            <summary>
+            Gets a completed Task.
+            Once we move to .NET 4.6 this can be removed and replaced with Task.CompletedTask
+            </summary>
         </member>
         <member name="T:System.Threading.Tasks.CompletedTask`1">
             <summary>Provides access to an already completed task.</summary>

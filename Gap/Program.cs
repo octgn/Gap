@@ -11,7 +11,11 @@ namespace Gap
 
         private static bool KeepRunning = true;
         static void Main( string[] args ) {
-            Run();
+            try {
+                Run();
+            } catch (Exception ex ) {
+                Log.Fatal( "Unhandled Exception", ex );
+            }
         }
 
         static void Run() {
