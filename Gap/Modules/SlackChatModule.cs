@@ -18,6 +18,7 @@ namespace Gap.Modules
         private System.Timers.Timer _reconnectTimer;
 
         public override void Configure() {
+            Log.Debug( nameof( Configure ) );
             base.Configure();
             _client = new SlackSocketClient( AuthToken );
             _client.OnMessageReceived += Client_OnMessageReceived;
@@ -30,6 +31,7 @@ namespace Gap.Modules
         }
 
         public void Start() {
+            Log.Debug( nameof( Start ) );
             _timer.Elapsed += RefreshChannelsTimer_Elapsed;
             _timer.Start();
             _reconnectTimer.Elapsed += ReconnectTimer_Elapsed;
@@ -38,6 +40,7 @@ namespace Gap.Modules
         }
 
         public void Stop() {
+            Log.Debug( nameof( Stop ) );
             _timer.Elapsed -= RefreshChannelsTimer_Elapsed;
             _timer.Stop();
             _reconnectTimer.Elapsed -= ReconnectTimer_Elapsed;
@@ -125,6 +128,7 @@ namespace Gap.Modules
         }
 
         protected override void Dispose( bool disposing ) {
+            Log.Debug( nameof( Dispose ) );
             base.Dispose( disposing );
             if( !disposing ) return;
 
